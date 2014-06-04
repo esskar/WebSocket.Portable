@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocket.Portable.Core", "WebSocket.Portable.Core\WebSocket.Portable.Core.csproj", "{FC55954C-88E3-4477-A93E-0F734224CFB6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{62620587-DD42-4752-8512-605CA8A7D83F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocket.Portable.Tests", "WebSocket.Portable.Tests\WebSocket.Portable.Tests.csproj", "{44DFC678-39DA-4B5C-821E-FDA4F85F1571}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocket.Portable", "WebSocket.Portable\WebSocket.Portable.csproj", "{DA181825-00B2-4D06-B47C-FD687735D12C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FC55954C-88E3-4477-A93E-0F734224CFB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC55954C-88E3-4477-A93E-0F734224CFB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC55954C-88E3-4477-A93E-0F734224CFB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC55954C-88E3-4477-A93E-0F734224CFB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44DFC678-39DA-4B5C-821E-FDA4F85F1571}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44DFC678-39DA-4B5C-821E-FDA4F85F1571}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44DFC678-39DA-4B5C-821E-FDA4F85F1571}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44DFC678-39DA-4B5C-821E-FDA4F85F1571}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA181825-00B2-4D06-B47C-FD687735D12C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA181825-00B2-4D06-B47C-FD687735D12C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA181825-00B2-4D06-B47C-FD687735D12C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA181825-00B2-4D06-B47C-FD687735D12C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{44DFC678-39DA-4B5C-821E-FDA4F85F1571} = {62620587-DD42-4752-8512-605CA8A7D83F}
+	EndGlobalSection
+EndGlobal
