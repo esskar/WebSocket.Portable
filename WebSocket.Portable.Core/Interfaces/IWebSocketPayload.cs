@@ -9,16 +9,22 @@ namespace WebSocket.Portable.Interfaces
         int Offset { get; }
 
         int Length { get; }
+
+        bool IsBinary { get; }
+
+        bool IsText { get; }
     }
 
     public static class WebSocketPayloadExtensions
     {
         public static string GetText(this IWebSocketPayload payload)
         {
-            if (payload == null || payload.Data == null)
-                return string.Empty;
+            if (payload == null || !payload.IsText)
+                return null;
 
-            return Encoding.UTF8.GetString(payload.Data, payload.Offset, payload.Length);
+            return payload.Data == null 
+                ? string.Empty 
+                : Encoding.UTF8.GetString(payload.Data, payload.Offset, payload.Length);
         }
     }
 }

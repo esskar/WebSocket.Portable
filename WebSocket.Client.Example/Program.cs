@@ -1,7 +1,6 @@
 ﻿using System;
 using WebSocket.Portable;
 using WebSocket.Portable.Interfaces;
-using WebSocket.Portable.Internal;
 
 namespace WebSocket.Client.Example
 {
@@ -10,6 +9,11 @@ namespace WebSocket.Client.Example
         static void Main()
         {
             var client = new WebSocketClient();
+            client.DataReceived += d =>
+            {
+                if (d.IsText)
+                    Console.WriteLine("RESPONSE: {0}", d.GetText());
+            };
             client.OpenAsync("wss://echo.websocket.org").Wait();
 
             Console.WriteLine("Client connected, enter text and send it with pressing <ENTER>");

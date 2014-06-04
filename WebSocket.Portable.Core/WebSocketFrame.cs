@@ -107,7 +107,7 @@ namespace WebSocket.Portable
 
             if (payloadLength > 0)
             {
-                this.Payload = new WebSocketPayload(await layer.ReadAsync((int) payloadLength, cancellationToken));
+                this.Payload = new WebSocketPayload(this, await layer.ReadAsync((int) payloadLength, cancellationToken));
                 if (this.IsMasked)
                 {
                     this.MaskPayload(
@@ -126,7 +126,7 @@ namespace WebSocket.Portable
             int payloadLength;
             byte[] extendedPayloadLength;
 
-            var payload = this.Payload ?? new WebSocketPayload();
+            var payload = this.Payload ?? new WebSocketPayload(this);
             if (payload.Length < 126)
             {
                 payloadLength = payload.Length;

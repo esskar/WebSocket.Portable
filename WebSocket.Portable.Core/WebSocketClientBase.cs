@@ -14,9 +14,28 @@ namespace WebSocket.Portable
         private TWebSocket _webSocket;
         private CancellationTokenSource _cts;
 
+        public event Action Opened;
+        public event Action Closed;
+        public event Action<Exception> Error;
+        public event Action<IWebSocketFrame> FrameReceived;
+        public event Action<IWebSocketPayload> DataReceived;
+        
+
         ~WebSocketClientBase()
         {
             this.Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+                _webSocket.Dispose();
         }
 
         public Task OpenAsync(string uri)
@@ -33,7 +52,21 @@ namespace WebSocket.Portable
             await _webSocket.ConnectAsync(uri, cancellationToken);
             await _webSocket.SendHandshakeAsync(cancellationToken);
 
+            this.OnOpened();
+
             this.ReceiveLoop();
+        }
+
+        public Task CloseAsync()
+        {
+            return this.CloseAsync(CancellationToken.None);
+        }
+
+        public Task CloseAsync(CancellationToken cancellationToken)
+        {
+            return _webSocket == null
+                ? TaskAsyncHelper.Empty
+                : _webSocket.CloseAsync(WebSocketErrorCode.CloseNormal);
         }
 
         public Task SendAsync(string text)
@@ -64,9 +97,9 @@ namespace WebSocket.Portable
         {
             var frame = new WebSocketClientFrame
             {
-                Opcode = isBinary ? WebSocketOpcode.Binary : WebSocketOpcode.Text,
-                Payload = new WebSocketPayload(bytes, offset, length)
+                Opcode = isBinary ? WebSocketOpcode.Binary : WebSocketOpcode.Text,                
             };
+            frame.Payload = new WebSocketPayload(frame, bytes, offset, length);
             return this.SendAsync(frame, cancellationToken);
         }
 
@@ -75,33 +108,29 @@ namespace WebSocket.Portable
             return _webSocket.SendFrameAsync(frame, cancellationToken);
         }
 
-
-        public Task CloseAsync()
+        protected virtual void OnOpened()
         {
-            return this.CloseAsync(CancellationToken.None);
+            var handler = this.Opened;
+            if (handler != null)
+                handler();
         }
 
-        public Task CloseAsync(CancellationToken cancellationToken)
+        protected virtual void OnFrameReceived(IWebSocketFrame frame)
         {
-            return _webSocket == null
-                ? TaskAsyncHelper.Empty
-                : _webSocket.CloseAsync(WebSocketErrorCode.CloseNormal);
+            var handler = this.FrameReceived;
+            if (handler != null)
+                handler(frame);
         }
 
-        public void Dispose()
+        protected virtual void OnDataReceived(IWebSocketPayload payload)
         {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-                _webSocket.Dispose();
+            var handler = this.DataReceived;
+            if (handler != null)
+                handler(payload);
         }
 
         private async void ReceiveLoop()
-        {            
+        {
             _cts = new CancellationTokenSource();
             while (!_cts.IsCancellationRequested)
             {
@@ -113,6 +142,8 @@ namespace WebSocket.Portable
                         // todo
                         break;
                     }
+
+                    this.OnFrameReceived(frame);
 
                     if (frame.Opcode == WebSocketOpcode.Close)
                     {
@@ -126,6 +157,8 @@ namespace WebSocket.Portable
                             this.LogTrace("Text received: '{0}'", frame.Payload.GetText());
                         else
                             this.LogTrace("Binary received: {0} bytes", frame.Payload.Length);
+
+                        this.OnDataReceived(frame.Payload);
                     }
                     else if (frame.IsControlFrame)
                     {
@@ -149,7 +182,7 @@ namespace WebSocket.Portable
 
                     // todo
                     break;
-                }                
+                }
             }
         }
     }
