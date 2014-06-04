@@ -43,13 +43,15 @@ namespace WebSocket.Portable.Net
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            base.Dispose(disposing);
-            if (!disposing)
-                return;
+            if (disposing)
+            {
+                if (_stream != null)
+                    _stream.Dispose();
+                _client.Close();
 
-            if (_stream != null)
-                _stream.Dispose();
-            _client.Close();
+                // do not dispose _reader
+            }
+            base.Dispose(disposing);            
         }
 
         public async Task ConnectAsync(string host, int port, CancellationToken cancellationToken)
