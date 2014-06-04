@@ -4,14 +4,15 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using WebSocket.Portable.Internal;
 using WebSocket.Portable.Resources;
 
 namespace WebSocket.Portable
 {
-    public class WebSocketResponseHandshake : HttpResponseMessage
+    public class WebSocketResponseHandshake : HttpResponseMessage, ICanLog
     {
         public static WebSocketResponseHandshake Parse(IList<string> responseLines)
-        {            
+        {
             if (responseLines == null || responseLines.Count < 1)
                 throw new ArgumentException(ErrorMessages.NoHeaderLines, "responseLines");
 
@@ -38,23 +39,32 @@ namespace WebSocket.Portable
                 var key = line.Substring(0, pos).Trim();
                 var value = line.Substring(pos + 1).Trim();
 
-                if (key.Equals("date", StringComparison.OrdinalIgnoreCase))
+                switch (key.ToLowerInvariant())
                 {
-                    response.Headers.Add(key, value);
-                }
-                else
-                {
-                    try
-                    {
-                        response.Headers.Add(key, value.Split(',').Select(v => v.Trim()).Where(v => v.Length > 0));
-                    }
-                    catch
-                    {
+                    case "date":
                         response.Headers.Add(key, value);
-                    }                                                    
-                }                
+                        break;
+
+                    default:
+                        try
+                        {
+                            response.Headers.Add(key, value.Split(',').Select(v => v.Trim()).Where(v => v.Length > 0));
+                        }
+                        catch
+                        {
+                            try
+                            {
+                                response.Headers.Add(key, value);
+                            }
+                            catch (Exception ex)
+                            {
+                                response.LogWarning("Failed to add header '{0}': {1}", key, ex);
+                            }                            
+                        }
+                        break;
+                }
             }
-            
+
 
             return response;
         }
