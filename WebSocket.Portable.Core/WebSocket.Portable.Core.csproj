@@ -54,6 +54,8 @@
     <Compile Include="Compression\OutputBuffer.cs" />
     <Compile Include="Compression\OutputWindow.cs" />
     <Compile Include="Interfaces\IDataLayer.cs" />
+    <Compile Include="Interfaces\ITraceable.cs" />
+    <Compile Include="Interfaces\ITracer.cs" />
     <Compile Include="Internal\ByteExtensions.cs" />
     <Compile Include="Internal\ByteOrder.cs" />
     <Compile Include="Internal\DataLayerExtensions.cs" />
@@ -62,6 +64,9 @@
     <Compile Include="Interfaces\IWebSocketFrame.cs" />
     <Compile Include="Interfaces\ITcpConnection.cs" />
     <Compile Include="Interfaces\IWebSocket.cs" />
+    <Compile Include="Interfaces\IWebSocketPayload.cs" />
+    <Compile Include="Internal\LogManager.cs" />
+    <Compile Include="Internal\Traceable.cs" />
     <Compile Include="Net\TcpConnectionBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\ErrorCodes.Designer.cs">
@@ -78,19 +83,24 @@
     <Compile Include="Tasks\TaskAsyncHelper.cs" />
     <Compile Include="WebSocketBase.cs" />
     <Compile Include="WebSocketClientBase.cs" />
+    <Compile Include="WebSocketClientFrame.cs" />
     <Compile Include="WebSocketCompression.cs" />
     <Compile Include="WebSocketErrorCode.cs" />
     <Compile Include="WebSocketException.cs" />
     <Compile Include="WebSocketFrame.cs" />
     <Compile Include="WebSocketHelper.cs" />
     <Compile Include="WebSocketOpcode.cs" />
+    <Compile Include="WebSocketPayload.cs" />
     <Compile Include="WebSocketRequestHandshake.cs" />
     <Compile Include="WebSocketResponseHandshake.cs" />
+    <Compile Include="WebSocketServerFrame.cs" />
     <Compile Include="WebSocketState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Threading.Tasks">

@@ -13,7 +13,7 @@ using WebSocket.Portable.Tasks;
 
 namespace WebSocket.Portable
 {
-    public abstract class WebSocketBase : ICanLog, IWebSocket
+    public abstract class WebSocketBase : Traceable, ICanLog, IWebSocket
     {        
         private bool _isSecure;
         private Uri _uri;
@@ -155,6 +155,31 @@ namespace WebSocket.Portable
             Interlocked.Exchange(ref _state, WebSocketState.Open);
 
             return response;
+        }
+
+        public Task SendFrameAsync(IWebSocketFrame frame)
+        {
+            return this.SendFrameAsync(frame, CancellationToken.None);
+        }
+
+        public Task SendFrameAsync(IWebSocketFrame frame, CancellationToken cancellationToken)
+        {
+            if (frame == null)
+                throw new ArgumentNullException("frame");
+
+            return frame.WriteToAsync(_tcp, cancellationToken);
+        }
+
+        public Task<IWebSocketFrame> ReceiveFrameAsync()
+        {
+            return this.ReceiveFrameAsync(CancellationToken.None);
+        }
+
+        public async Task<IWebSocketFrame> ReceiveFrameAsync(CancellationToken cancellationToken)
+        {
+            var frame = new WebSocketServerFrame();
+            await frame.ReadFromAsync(_tcp, cancellationToken);
+            return frame;
         }
 
         /// <summary>

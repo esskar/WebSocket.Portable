@@ -2,10 +2,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using WebSocket.Portable.Interfaces;
+using WebSocket.Portable.Internal;
 
 namespace WebSocket.Portable.Net
 {
-    public abstract class TcpConnectionBase : ITcpConnection
+    public abstract class TcpConnectionBase : Traceable, ITcpConnection
     {
         /// <summary>
         /// Finalizes an instance of the <see cref="TcpConnectionBase"/> class.

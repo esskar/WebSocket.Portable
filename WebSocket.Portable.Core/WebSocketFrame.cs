@@ -9,7 +9,7 @@ using WebSocket.Portable.Resources;
 
 namespace WebSocket.Portable
 {
-    internal class WebSocketFrame : IWebSocketFrame
+    internal abstract class WebSocketFrame : IWebSocketFrame
     {
         /// <summary>
         /// Gets a value indicating whether this frame is a control frame.
@@ -35,7 +35,7 @@ namespace WebSocket.Portable
 
         public bool IsFin { get; set; }
 
-        public bool IsMasked { get; set; }
+        public bool IsMasked { get; protected set; }
 
         public bool IsRsv1 { get; set; }
 
@@ -49,7 +49,7 @@ namespace WebSocket.Portable
         /// <value>
         /// The masking key.
         /// </value>
-        public byte[] MaskingKey { get; set; }
+        public byte[] MaskingKey { get; protected set; }
 
         /// <summary>
         /// Gets the opcode.
@@ -65,7 +65,7 @@ namespace WebSocket.Portable
         /// <value>
         /// The payload.
         /// </value>
-        public byte[] Payload { get; set; }
+        public IWebSocketPayload Payload { get; set; }
 
         public async Task ReadFromAsync(IDataLayer layer, CancellationToken cancellationToken)
         {
@@ -107,9 +107,13 @@ namespace WebSocket.Portable
 
             if (payloadLength > 0)
             {
-                this.Payload = await layer.ReadAsync((int) payloadLength, cancellationToken);
+                this.Payload = new WebSocketPayload(await layer.ReadAsync((int) payloadLength, cancellationToken));
                 if (this.IsMasked)
-                    this.MaskPayload(this.Payload, 0, this.Payload.Length, this.Payload, 0);
+                {
+                    this.MaskPayload(
+                        this.Payload.Data, this.Payload.Offset, this.Payload.Length,
+                        this.Payload.Data, this.Payload.Offset);
+                }
             }
             else
             {
@@ -122,7 +126,7 @@ namespace WebSocket.Portable
             int payloadLength;
             byte[] extendedPayloadLength;
 
-            var payload = this.Payload ?? new byte[0];
+            var payload = this.Payload ?? new WebSocketPayload();
             if (payload.Length < 126)
             {
                 payloadLength = payload.Length;
@@ -138,7 +142,7 @@ namespace WebSocket.Portable
             else
             {
                 payloadLength = 127;
-                extendedPayloadLength = payload.LongCount().ToByteArray(ByteOrder.BigEndian);
+                extendedPayloadLength = ((long)payload.Length).ToByteArray(ByteOrder.BigEndian);
             }
 
             var header = this.IsFin.ToBit();
@@ -165,14 +169,14 @@ namespace WebSocket.Portable
                 while (offset < payload.Length)
                 {
                     var count = Math.Min(buffer.Length, payload.Length - offset);
-                    this.MaskPayload(payload, offset, count, buffer, 0);
+                    this.MaskPayload(payload.Data, payload.Offset + offset, count, buffer, 0);
                     await layer.WriteAsync(buffer, 0, count, cancellationToken);
                     offset += count;
                 }
             }
             else
             {
-                await layer.WriteAsync(payload, 0, payload.Length, cancellationToken);                    
+                await layer.WriteAsync(payload.Data, payload.Offset, payload.Length, cancellationToken);                    
             }
         }
 

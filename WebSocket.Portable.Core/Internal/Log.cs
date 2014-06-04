@@ -4,7 +4,7 @@ namespace WebSocket.Portable.Internal
 {
     internal interface ICanLog { }
 
-    internal enum LogLevel
+    public enum LogLevel
     {
         None,
         Trace,
@@ -54,8 +54,7 @@ namespace WebSocket.Portable.Internal
         private static void LogMessage(ICanLog canLog, LogLevel logLevel, string fmt, params object[] args)
         {
             var message = args.Length > 0 ? string.Format(fmt, args) : fmt;
-
-            //TODO
+            LogManager.Instance.LogMessage(canLog.GetType(), logLevel, message);
         }
     }
 }

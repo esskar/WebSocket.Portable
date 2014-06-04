@@ -1,4 +1,7 @@
-﻿namespace WebSocket.Portable.Interfaces
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace WebSocket.Portable.Interfaces
 {
     public interface IWebSocketFrame
     {
@@ -50,6 +53,14 @@
         /// <value>
         /// The payload.
         /// </value>
-        byte[] Payload { get; }        
+        IWebSocketPayload Payload { get; }
+
+        /// <summary>
+        /// Writes the frame to the fiven layer asynchronous.
+        /// </summary>
+        /// <param name="layer">The layer.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task WriteToAsync(IDataLayer layer, CancellationToken cancellationToken);
     }
 }

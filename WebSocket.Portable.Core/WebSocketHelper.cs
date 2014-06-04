@@ -5,9 +5,22 @@ namespace WebSocket.Portable
 {
     internal static class WebSocketHelper
     {
-        internal static string CreateClientKey()
+        private static readonly Random _rnd = new Random();
+
+        public static string CreateClientKey()
         {
-            return Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+            var bytes = new byte[16];
+            lock (_rnd)
+                _rnd.NextBytes(bytes);
+            return Convert.ToBase64String(bytes);
+        }
+
+        public static byte[] CreateMaskingKey()
+        {
+            var bytes = new byte[4];
+            lock (_rnd)
+                _rnd.NextBytes(bytes);
+            return bytes;
         }
 
         public static Uri CreateWebSocketUri(string urlString)

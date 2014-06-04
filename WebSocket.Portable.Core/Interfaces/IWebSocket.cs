@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace WebSocket.Portable.Interfaces
 {
-    public interface IWebSocket : IDisposable
+    public interface IWebSocket : ITraceable, IDisposable
     {
         /// <summary>
         /// Closes the socket asynchronous.
@@ -54,6 +54,34 @@ namespace WebSocket.Portable.Interfaces
         /// <param name="handshake">The handshake.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        Task<WebSocketResponseHandshake> SendHandshakeAsync(WebSocketRequestHandshake handshake, CancellationToken cancellationToken);        
+        Task<WebSocketResponseHandshake> SendHandshakeAsync(WebSocketRequestHandshake handshake, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Sends a frame asynchronous.
+        /// </summary>
+        /// <param name="frame">The frame.</param>
+        /// <returns></returns>
+        Task SendFrameAsync(IWebSocketFrame frame);
+
+        /// <summary>
+        /// Sends a frame asynchronous.
+        /// </summary>
+        /// <param name="frame">The frame.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task SendFrameAsync(IWebSocketFrame frame, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Receives a frame asynchronous.
+        /// </summary>
+        /// <returns></returns>
+        Task<IWebSocketFrame> ReceiveFrameAsync();
+
+        /// <summary>
+        /// Receives a frame asynchronous.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<IWebSocketFrame> ReceiveFrameAsync(CancellationToken cancellationToken);
     }
 }
