@@ -6,7 +6,7 @@ using WebSocket.Portable.Internal;
 
 namespace WebSocket.Portable.Net
 {
-    public abstract class TcpConnectionBase : Traceable, ITcpConnection
+    public abstract class TcpConnectionBase : ITcpConnection
     {
         /// <summary>
         /// Finalizes an instance of the <see cref="TcpConnectionBase"/> class.

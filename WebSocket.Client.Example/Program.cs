@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using WebSocket.Portable;
 using WebSocket.Portable.Interfaces;
 using WebSocket.Portable.Internal;
@@ -8,9 +7,9 @@ namespace WebSocket.Client.Example
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            var client = new WebSocketClient {Tracer = new ConsoleTracer()};
+            var client = new WebSocketClient();
             client.OpenAsync("ws://echo.websocket.org").Wait();
 
             Console.WriteLine("Client connected, enter text and send it with pressing <ENTER>");
@@ -20,14 +19,6 @@ namespace WebSocket.Client.Example
                 client.SendAsync(text);
                 text = Console.ReadLine();
             }
-        }
-
-        class ConsoleTracer : ITracer
-        {
-            public void Trace(Type type, LogLevel logLevel, string message)
-            {
-                Console.WriteLine("{0} - {1}: {2}", logLevel, type.Name, message);
-            }
-        }
+        }        
     }
 }

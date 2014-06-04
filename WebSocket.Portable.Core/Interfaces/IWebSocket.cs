@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace WebSocket.Portable.Interfaces
 {
-    public interface IWebSocket : ITraceable, IDisposable
+    public interface IWebSocket : IDisposable
     {
         /// <summary>
         /// Closes the socket asynchronous.

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace WebSocket.Portable.Interfaces
 {
-    public interface IDataLayer : ITraceable, IDisposable
+    public interface IDataLayer : IDisposable
     {
         /// <summary>
         /// Writes data asynchronous.

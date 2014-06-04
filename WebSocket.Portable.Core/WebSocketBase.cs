@@ -13,7 +13,7 @@ using WebSocket.Portable.Tasks;
 
 namespace WebSocket.Portable
 {
-    public abstract class WebSocketBase : Traceable, ICanLog, IWebSocket
+    public abstract class WebSocketBase : ICanLog, IWebSocket
     {        
         private bool _isSecure;
         private Uri _uri;

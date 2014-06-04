@@ -8,7 +8,7 @@ using WebSocket.Portable.Tasks;
 
 namespace WebSocket.Portable
 {
-    public abstract class WebSocketClientBase<TWebSocket> : Traceable, IDisposable, ICanLog
+    public abstract class WebSocketClientBase<TWebSocket> : IDisposable, ICanLog
         where TWebSocket : class, IWebSocket, new()
     {
         private TWebSocket _webSocket;
