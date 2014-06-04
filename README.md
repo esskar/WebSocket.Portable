@@ -1,4 +1,4 @@
-# WebSocket.Portablet
+# WebSocket.Portable
 
 WebSocket.Portable is a portable C# implementation of 
 the [WebSocket][1] protocol.
@@ -6,7 +6,8 @@ the [WebSocket][1] protocol.
 ### Status
 
 The WebSocket.Portable library is still in pre-alpha state, 
-still lots of features are missing, still lots of tests to write, interfaces will probably change.
+still lots of features are missing, still lots of tests to write, 
+interfaces will probably change.
 
 ### Installation
 
