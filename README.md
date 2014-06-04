@@ -26,7 +26,7 @@ WebSocket.Portable will be available via NuGet.
 	// send some data
     await client.SendAsync("WebSocket.Portable rocks!");
 
-### Questions ?
+### Questions
 
 Ask questions in the [WebSocket.Portable][2] room on [JabbR][3].
 
