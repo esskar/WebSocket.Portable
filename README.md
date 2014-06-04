@@ -1,4 +1,4 @@
-# WebSocket.Portable
+## WebSocket.Portable
 
 WebSocket.Portable is a portable C# implementation of 
 the [WebSocket][1] protocol.
