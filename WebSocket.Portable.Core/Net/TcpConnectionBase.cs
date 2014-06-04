@@ -21,8 +21,8 @@ namespace WebSocket.Portable.Net
         /// <value>
         /// <c>true</c> if this tcp connection is secure; otherwise, <c>false</c>.
         /// </value>
-        public abstract bool IsSecure { get; }        
-
+        public abstract bool IsSecure { get; }
+        
         /// <summary>
         /// Sends data asynchronous.
         /// </summary>
