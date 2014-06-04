@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using WebSocket.Portable.Interfaces;
-using WebSocket.Portable.Internal;
 
 namespace WebSocket.Portable.Net
 {
@@ -17,20 +16,12 @@ namespace WebSocket.Portable.Net
         }
 
         /// <summary>
-        /// Gets a value indicating whether data is available.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if data is available; otherwise, <c>false</c>.
-        /// </value>
-        public abstract bool IsDataAvailable { get; }
-
-        /// <summary>
         /// Gets a value indicating whether this tcp connection is secure.
         /// </summary>
         /// <value>
         /// <c>true</c> if this tcp connection is secure; otherwise, <c>false</c>.
         /// </value>
-        public abstract bool IsSecure { get; }
+        public abstract bool IsSecure { get; }        
 
         /// <summary>
         /// Sends data asynchronous.

@@ -1,23 +1,31 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using WebSocket.Portable.Interfaces;
 
 namespace WebSocket.Portable.Net
 {
     public class TcpConnection : TcpConnectionBase
     {
+        private readonly object _sync = new object();
         private readonly TcpClient _client;
-        private NetworkStream _stream;
+        private readonly bool _isSecure;
+        private volatile Stream _stream;
         private StreamReader _reader;
+        private string _host;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TcpConnection"/> class.
+        /// Initializes a new instance of the <see cref="TcpConnection" /> class.
         /// </summary>
-        public TcpConnection()
+        /// <param name="useSsl">if set to <c>true</c> the connection is secured using SSL.</param>
+        public TcpConnection(bool useSsl)
         {
+            _isSecure = useSsl;
             _client = new TcpClient();
         }
 
@@ -50,23 +58,13 @@ namespace WebSocket.Portable.Net
         {
             try
             {
+                _host = host;
                 await _client.ConnectAsync(host, port);
             }
             catch (SocketException se)
             {
                 throw new WebException(string.Format("Failed to connect to '{0}:{1}'", host, port), se);
             }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether data is available.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if data is available; otherwise, <c>false</c>.
-        /// </value>
-        public override bool IsDataAvailable
-        {
-            get { return this.Stream.DataAvailable; }
         }
 
         /// <summary>
@@ -77,7 +75,7 @@ namespace WebSocket.Portable.Net
         /// </value>
         public override bool IsSecure
         {
-            get { return false; }
+            get { return _isSecure; }
         }
 
         /// <summary>
@@ -112,9 +110,29 @@ namespace WebSocket.Portable.Net
         /// <value>
         /// The stream.
         /// </value>
-        private NetworkStream Stream
+        private Stream Stream
         {
-            get { return _stream ?? (_stream = _client.GetStream()); }
+            get
+            {
+                if (_stream != null)
+                    return _stream;
+
+                lock (_sync)
+                {
+                    if (_stream != null)
+                        return _stream;
+
+                    Stream stream = _client.GetStream();
+                    if (_isSecure)
+                    {
+                        var sslStream = new SslStream(stream);
+                        sslStream.AuthenticateAsClient(_host);                        
+                        stream = sslStream;
+                    }
+                    _stream = stream;                    
+                }
+                return _stream;
+            }
         }
 
         /// <summary>

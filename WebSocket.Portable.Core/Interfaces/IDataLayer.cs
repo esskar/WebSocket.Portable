@@ -43,5 +43,18 @@ namespace WebSocket.Portable.Interfaces
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         Task<int> ReadAsync(byte[] buffer, int offset, int length, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Reads a line asynchronous.
+        /// </summary>
+        /// <returns></returns>
+        Task<string> ReadLineAsync();
+
+        /// <summary>
+        /// Reads a line asynchronous.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task<string> ReadLineAsync(CancellationToken cancellationToken);
     }
 }

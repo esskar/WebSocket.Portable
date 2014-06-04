@@ -10,7 +10,7 @@ namespace WebSocket.Client.Example
         static void Main()
         {
             var client = new WebSocketClient();
-            client.OpenAsync("ws://echo.websocket.org").Wait();
+            client.OpenAsync("wss://echo.websocket.org").Wait();
 
             Console.WriteLine("Client connected, enter text and send it with pressing <ENTER>");
             var text = Console.ReadLine();

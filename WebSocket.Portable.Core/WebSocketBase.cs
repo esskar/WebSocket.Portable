@@ -15,7 +15,6 @@ namespace WebSocket.Portable
 {
     public abstract class WebSocketBase : ICanLog, IWebSocket
     {        
-        private bool _isSecure;
         private Uri _uri;
         private WebSocketCompression _compression;
         private int _state;
@@ -64,11 +63,9 @@ namespace WebSocket.Portable
                 throw new ArgumentNullException("uri");
 
             _uri = WebSocketHelper.CreateWebSocketUri(uri);
-            _isSecure = _uri.Scheme == "wss";
-            if (_isSecure)
-                throw new NotSupportedException(ErrorMessages.SecureConnectionsAreNotYetSupported);
-
-            _tcp = await this.ConnectAsync(_uri.DnsSafeHost, _uri.Port, cancellationToken);
+            
+            var useSsl = _uri.Scheme == "wss";
+            _tcp = await this.ConnectAsync(_uri.DnsSafeHost, _uri.Port, useSsl, cancellationToken);
             Interlocked.Exchange(ref _state, WebSocketState.Connected);
         }
 
@@ -77,9 +74,10 @@ namespace WebSocket.Portable
         /// </summary>
         /// <param name="host">The host.</param>
         /// <param name="port">The port.</param>
+        /// <param name="useSsl">if set to <c>true</c> [use SSL].</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        protected abstract Task<ITcpConnection> ConnectAsync(string host, int port, CancellationToken cancellationToken);
+        protected abstract Task<ITcpConnection> ConnectAsync(string host, int port, bool useSsl, CancellationToken cancellationToken);
 
         /// <summary>
         /// Sends the default handshake asynchronous.
