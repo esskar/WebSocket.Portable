@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using WebSocket.Portable.Internal;
 using WebSocket.Portable.Resources;
+using WebSocket.Portable.Tasks;
 
 namespace WebSocket.Portable
 {
@@ -25,7 +28,7 @@ namespace WebSocket.Portable
                 StatusCode = (HttpStatusCode)Convert.ToInt32(responseLine[1]),
                 ReasonPhrase = string.Join(" ", responseLine.Skip(2)),
                 Version = new Version(responseLine[0].Substring(5)), // "HTTP/x.x"            
-            };
+            };            
 
             foreach (var line in responseLines.Skip(1))
             {
@@ -36,32 +39,48 @@ namespace WebSocket.Portable
                 if (pos < 0)
                     continue;
 
-                var key = line.Substring(0, pos).Trim();
+                var key = line.Substring(0, pos).Trim().ToLowerInvariant();
                 var value = line.Substring(pos + 1).Trim();
+                var values = value.Split(',').Select(v => v.Trim()).Where(v => v.Length > 0);
 
-                switch (key.ToLowerInvariant())
+                if (key == "date")
                 {
-                    case "date":
-                        response.Headers.Add(key, value);
-                        break;
-
-                    default:
+                    response.Headers.Add(key, value);
+                }
+                else if (key.StartsWith("content-") || key == "expires" || key == "last-modified")
+                {
+                    if (response.Content == null)
+                        response.Content = new CustomHttpContent();
+                    if (key == "expires")
+                    {
+                        int offset;
+                        if (int.TryParse(value, out offset)) // "0" or "-1"
+                            response.Content.Headers.Add(key, DateTime.UtcNow.AddSeconds(offset).ToString("R"));
+                        else
+                            response.Content.Headers.Add(key, value);
+                    }
+                    else
+                    {
+                        response.Content.Headers.Add(key, values);
+                    }                    
+                }
+                else
+                {
+                    try
+                    {
+                        response.Headers.Add(key, values);
+                    }
+                    catch
+                    {
                         try
                         {
-                            response.Headers.Add(key, value.Split(',').Select(v => v.Trim()).Where(v => v.Length > 0));
+                            response.Headers.Add(key, value);
                         }
-                        catch
+                        catch (Exception ex)
                         {
-                            try
-                            {
-                                response.Headers.Add(key, value);
-                            }
-                            catch (Exception ex)
-                            {
-                                response.LogWarning("Failed to add header '{0}': {1}", key, ex);
-                            }                            
+                            response.LogWarning("Failed to add header '{0}': {1}", key, ex);
                         }
-                        break;
+                    }
                 }
             }
 
@@ -129,6 +148,20 @@ namespace WebSocket.Portable
 
             foreach (var value in values)
                 this.Headers.Add(key, value);
+        }
+
+        private class CustomHttpContent : HttpContent
+        {
+            protected override Task SerializeToStreamAsync(Stream stream, TransportContext context)
+            {
+                return TaskAsyncHelper.Empty;                
+            }
+
+            protected override bool TryComputeLength(out long length)
+            {
+                length = 0;
+                return false;
+            }
         }
     }
 }
