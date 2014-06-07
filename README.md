@@ -18,7 +18,7 @@ WebSocket.Portable will be available via NuGet.
     var client = new WebSocketClient();
 	
 	// get notified when data has arrived
-	client.DataReceived += d => Console.WriteLine(d.GetText());
+	client.FrameReceived += frame => Console.WriteLine(frame);
 
 	// open a web socket connection to ws://echo.websocket.org
     await client.OpenAsync("ws://echo.websocket.org");
