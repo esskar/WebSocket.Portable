@@ -32,6 +32,30 @@ namespace WebSocket.Portable.Interfaces
         bool IsRsv3 { get; }
 
         /// <summary>
+        /// Gets a value indicating whether this ftame is a fragment.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this frame is a fragment; otherwise, <c>false</c>.
+        /// </value>
+        bool IsFragment { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this frame is the first fragment in a series of fragments.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this frame is the first fragment; otherwise, <c>false</c>.
+        /// </value>
+        bool IsFirstFragment { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this frame is the last fragment in a series of fragments.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this frame is the last fragment; otherwise, <c>false</c>.
+        /// </value>
+        bool IsLastFragment { get; }
+
+        /// <summary>
         /// Gets the masking key.
         /// </summary>
         /// <value>

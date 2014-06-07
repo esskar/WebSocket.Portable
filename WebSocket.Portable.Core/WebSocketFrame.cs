@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WebSocket.Portable.Interfaces;
@@ -42,6 +41,39 @@ namespace WebSocket.Portable
         public bool IsRsv2 { get; set; }
 
         public bool IsRsv3 { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether this ftame is a fragment.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this frame is a fragment; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsFragment
+        {
+            get { return this.Opcode == WebSocketOpcode.Continuation && !this.IsFin; }            
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this frame is the first fragment in a series of fragments.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this frame is the first fragment; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsFirstFragment
+        {
+            get { return this.Opcode != WebSocketOpcode.Continuation && !this.IsFin; }            
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this frame is the last fragment in a series of fragments.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this frame is the last fragment; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsLastFragment
+        {
+            get { return this.Opcode == WebSocketOpcode.Continuation && this.IsFin; }            
+        }
 
         /// <summary>
         /// Gets the masking key.
