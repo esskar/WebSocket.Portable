@@ -18,8 +18,11 @@ namespace WebSocket.Portable
         public event Action Closed;
         public event Action<Exception> Error;
         public event Action<IWebSocketFrame> FrameReceived;
-        public event Action<IWebSocketPayload> DataReceived;
-        
+
+        protected WebSocketClientBase()
+        {
+            this.AutoSendPongResponse = true;
+        }
 
         ~WebSocketClientBase()
         {
@@ -37,6 +40,14 @@ namespace WebSocket.Portable
             if (disposing)
                 _webSocket.Dispose();
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to send automatically pong frames when a ping is received.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if pong frames are send automatically; otherwise, <c>false</c>.
+        /// </value>
+        public bool AutoSendPongResponse { get; set; }                       
 
         public Task OpenAsync(string uri)
         {
@@ -122,13 +133,6 @@ namespace WebSocket.Portable
                 handler(frame);
         }
 
-        protected virtual void OnDataReceived(IWebSocketPayload payload)
-        {
-            var handler = this.DataReceived;
-            if (handler != null)
-                handler(payload);
-        }
-
         private async void ReceiveLoop()
         {
             _cts = new CancellationTokenSource();
@@ -149,15 +153,10 @@ namespace WebSocket.Portable
                     {
                         break;
                     }
-
-                    if (frame.IsDataFrame)
-                    {
-                        this.OnDataReceived(frame.Payload);
-                    }
-                    else if (frame.IsControlFrame)
+                    if (frame.IsControlFrame)
                     {
                         // Handle ping frame
-                        if (frame.Opcode == WebSocketOpcode.Ping)
+                        if (frame.Opcode == WebSocketOpcode.Ping && this.AutoSendPongResponse)
                         {
                             var pongFrame = new WebSocketClientFrame
                             {
