@@ -6,7 +6,7 @@
         /// Equivalent to numeric value 0.
         /// Indicates a continuation frame.
         /// </summary>
-        Cont = 0x0,
+        Continuation = 0x0,
 
         /// <summary>
         /// Equivalent to numeric value 1.
@@ -36,19 +36,21 @@
         /// Equivalent to numeric value 10.
         /// Indicates a pong frame.
         /// </summary>
-        Pong = 0xa
+        Pong = 0xa        
     }
 
     public static class WebSocketOpcodeExtensions
     {
         public static bool IsControl(this WebSocketOpcode opcode)
         {
-            return opcode == WebSocketOpcode.Close || opcode == WebSocketOpcode.Ping || opcode == WebSocketOpcode.Pong;
+            var oc = (byte)opcode;
+            return oc >= 0x8 && oc <= 0xf;
         }
 
         public static bool IsData(this WebSocketOpcode opcode)
         {
-            return opcode == WebSocketOpcode.Text || opcode == WebSocketOpcode.Binary;
+            var oc = (byte)opcode;
+            return oc >= 0x1 && oc <= 0x7;
         }
     }
 }
