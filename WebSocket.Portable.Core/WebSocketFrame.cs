@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using WebSocket.Portable.Interfaces;
@@ -10,6 +11,16 @@ namespace WebSocket.Portable
 {
     internal abstract class WebSocketFrame : IWebSocketFrame
     {
+        public bool IsFin { get; set; }
+
+        public bool IsMasked { get; protected set; }
+
+        public bool IsRsv1 { get; set; }
+
+        public bool IsRsv2 { get; set; }
+
+        public bool IsRsv3 { get; set; }
+
         /// <summary>
         /// Gets a value indicating whether this frame is a control frame.
         /// </summary>
@@ -32,15 +43,15 @@ namespace WebSocket.Portable
             get { return this.Opcode.IsData(); }
         }
 
-        public bool IsFin { get; set; }
+        public bool IsBinaryData
+        {
+            get { return this.Opcode == WebSocketOpcode.Binary; }            
+        }
 
-        public bool IsMasked { get; protected set; }
-
-        public bool IsRsv1 { get; set; }
-
-        public bool IsRsv2 { get; set; }
-
-        public bool IsRsv3 { get; set; }
+        public bool IsTextData
+        {
+            get { return this.Opcode == WebSocketOpcode.Text; }
+        }
 
         /// <summary>
         /// Gets a value indicating whether this ftame is a fragment.
@@ -216,6 +227,46 @@ namespace WebSocket.Portable
         {
             for (var i = 0; i < inputLength; i++)
                 output[i + outputOffset] = (byte)(input[i + inputOffset] ^ this.MaskingKey[i % this.MaskingKey.Length]);
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            if (this.IsControlFrame)
+            {
+                sb.AppendFormat("Control Frame {0}", this.Opcode);
+            }
+            else if (this.IsDataFrame)
+            {
+                sb.AppendFormat("Data Frame {0}", this.Opcode);
+                if (this.IsBinaryData)
+                {
+                    sb.AppendFormat(", Length {0} bytes", this.Payload == null ? 0 : this.Payload.Length);
+                }
+                else if (this.IsTextData)
+                {
+                    sb.AppendFormat(", '{0}'", this.Payload == null ? string.Empty : this.Payload.GetText());
+                }
+                if (this.IsFirstFragment)
+                {
+                    sb.Append(", first frame in a series of fragments.");
+                }
+            }
+            else if (this.Opcode == WebSocketOpcode.Continuation)
+            {
+                sb.Append("Continuation Frame");
+                if (this.IsLastFragment)
+                {
+                    sb.Append(", last frame in a series of fragments");
+                }
+            }
+            else
+            {
+                sb.AppendFormat("Error: Unknown opcode: {0}", this.Opcode);
+            }
+
+            return sb.ToString();
         }
     }
 }

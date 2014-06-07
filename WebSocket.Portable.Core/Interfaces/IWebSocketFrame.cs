@@ -5,6 +5,16 @@ namespace WebSocket.Portable.Interfaces
 {
     public interface IWebSocketFrame
     {
+        bool IsFin { get; }
+
+        bool IsMasked { get; }
+
+        bool IsRsv1 { get; }
+
+        bool IsRsv2 { get; }
+
+        bool IsRsv3 { get; }        
+
         /// <summary>
         /// Gets a value indicating whether this frame is a control frame.
         /// </summary>
@@ -21,15 +31,21 @@ namespace WebSocket.Portable.Interfaces
         /// </value>
         bool IsDataFrame { get; }
 
-        bool IsFin { get; }
+        /// <summary>
+        /// Gets a value indicating whether this frame contains binary data.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this frame contains binary data; otherwise, <c>false</c>.
+        /// </value>
+        bool IsBinaryData { get; }
 
-        bool IsMasked { get; }
-
-        bool IsRsv1 { get; }
-
-        bool IsRsv2 { get; }
-
-        bool IsRsv3 { get; }
+        /// <summary>
+        /// Gets a value indicating whether this frame contains text data.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this frame contains text data; otherwise, <c>false</c>.
+        /// </value>
+        bool IsTextData { get; }
 
         /// <summary>
         /// Gets a value indicating whether this ftame is a fragment.
