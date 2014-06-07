@@ -152,17 +152,20 @@ namespace WebSocket.Portable
 
                     if (frame.IsDataFrame)
                     {
-                        this.LogDebug("Data frame received: {0}", frame.Opcode);
-                        if (frame.Opcode == WebSocketOpcode.Text)
-                            this.LogTrace("Text received: '{0}'", frame.Payload.GetText());
-                        else
-                            this.LogTrace("Binary received: {0} bytes", frame.Payload.Length);
-
                         this.OnDataReceived(frame.Payload);
                     }
                     else if (frame.IsControlFrame)
                     {
-                        this.LogDebug("Control frame received: {0}", frame.Opcode);
+                        // Handle ping frame
+                        if (frame.Opcode == WebSocketOpcode.Ping)
+                        {
+                            var pongFrame = new WebSocketClientFrame
+                            {
+                                Opcode = WebSocketOpcode.Pong,
+                                Payload = frame.Payload
+                            };
+                            await this.SendAsync(pongFrame, _cts.Token);
+                        }
                     }
                     else
                     {
