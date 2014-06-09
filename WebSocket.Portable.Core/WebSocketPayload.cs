@@ -58,10 +58,5 @@ namespace WebSocket.Portable
         {
             get { return _length; }
         }
-
-        public override string ToString()
-        {
-            return this.GetText();
-        }
     }
 }

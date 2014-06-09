@@ -13,11 +13,12 @@ namespace WebSocket.Portable
     {
         private TWebSocket _webSocket;
         private CancellationTokenSource _cts;
-
+        
         public event Action Opened;
         public event Action Closed;
         public event Action<Exception> Error;
         public event Action<IWebSocketFrame> FrameReceived;
+        public event Action<IWebSocketMessage> MessageReceived;
 
         protected WebSocketClientBase()
         {
@@ -140,9 +141,18 @@ namespace WebSocket.Portable
                 handler(frame);
         }
 
+        protected virtual void OnMessageReceived(IWebSocketMessage message)
+        {
+            var handler = this.MessageReceived;
+            if (handler != null)
+                handler(message);
+        }
+
         private async void ReceiveLoop()
         {
             _cts = new CancellationTokenSource();
+
+            WebSocketMessage currentMessage = null;
             while (!_cts.IsCancellationRequested)
             {
                 try
@@ -172,10 +182,29 @@ namespace WebSocket.Portable
                             };
                             await this.SendAsync(pongFrame, _cts.Token);
                         }
+                    }                    
+                    else if (frame.IsDataFrame)
+                    {
+                        if (currentMessage != null)
+                            throw new WebSocketException(WebSocketErrorCode.CloseInconstistentData);
+                        currentMessage = new WebSocketMessage();
+                        currentMessage.AddFrame(frame);
+                    }
+                    else if (frame.Opcode == WebSocketOpcode.Continuation)
+                    {
+                        if (currentMessage == null)
+                            throw new WebSocketException(WebSocketErrorCode.CloseInconstistentData);
+                        currentMessage.AddFrame(frame);                        
                     }
                     else
-                    {
+                    {                       
                         this.LogDebug("Other frame received: {0}", frame.Opcode);
+                    }
+
+                    if (currentMessage != null && currentMessage.IsComplete)
+                    {
+                        this.OnMessageReceived(currentMessage);
+                        currentMessage = null;
                     }
                 }
                 catch (WebSocketException wsex)

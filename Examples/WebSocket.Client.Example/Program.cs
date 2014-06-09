@@ -9,10 +9,10 @@ namespace WebSocket.Client.Example
         static void Main()
         {
             var client = new WebSocketClient();
-            client.FrameReceived += f =>
+            client.MessageReceived += m =>
             {
-                if (f.Payload.IsText)
-                    Console.WriteLine("RESPONSE: {0}", f.Payload.GetText());
+                if (m.IsText)
+                    Console.WriteLine("RESPONSE: {0}", m.ToString());
             };
             client.OpenAsync("wss://echo.websocket.org").Wait();
 
