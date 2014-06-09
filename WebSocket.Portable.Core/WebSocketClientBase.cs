@@ -119,6 +119,13 @@ namespace WebSocket.Portable
             return _webSocket.SendFrameAsync(frame, cancellationToken);
         }
 
+        protected virtual void OnError(Exception exception)
+        {
+            var handler = this.Error;
+            if (handler != null)
+                handler(exception);
+        }
+
         protected virtual void OnOpened()
         {
             var handler = this.Opened;
@@ -174,15 +181,13 @@ namespace WebSocket.Portable
                 catch (WebSocketException wsex)
                 {
                     this.LogError("An web socket error occurred.", wsex);
-
-                    // todo
+                    this.OnError(wsex);
                     break;
                 }
                 catch (Exception ex)
                 {
                     this.LogError("An unexpected error occurred.", ex);
-
-                    // todo
+                    this.OnError(ex);
                     break;
                 }
             }
