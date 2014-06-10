@@ -22,6 +22,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocket.Portable.Win", "W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocket.Portable.WP8", "WebSocket.Portable.WP8\WebSocket.Portable.WP8.csproj", "{13991A32-E275-43E3-85DD-D288004F9C58}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocket.Portable.Extensions.Compression.Tests", "Tests\WebSocket.Portable.Extensions.Compression.Tests\WebSocket.Portable.Extensions.Compression.Tests.csproj", "{0A001DD6-668A-469C-848D-A8441DAF76A1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{7F39520D-6473-4561-8FB9-70BF555D1597}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocket.Portable.Extensions.PerMessageCompression", "Extensions\WebSocket.Portable.Extensions.PerMessageCompression\WebSocket.Portable.Extensions.PerMessageCompression.csproj", "{095B49F4-F394-459B-AAD4-05CD1DC02223}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,12 +110,34 @@ Global
 		{13991A32-E275-43E3-85DD-D288004F9C58}.Release|x64.ActiveCfg = Release|Any CPU
 		{13991A32-E275-43E3-85DD-D288004F9C58}.Release|x86.ActiveCfg = Release|x86
 		{13991A32-E275-43E3-85DD-D288004F9C58}.Release|x86.Build.0 = Release|x86
+		{0A001DD6-668A-469C-848D-A8441DAF76A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A001DD6-668A-469C-848D-A8441DAF76A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A001DD6-668A-469C-848D-A8441DAF76A1}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{0A001DD6-668A-469C-848D-A8441DAF76A1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0A001DD6-668A-469C-848D-A8441DAF76A1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0A001DD6-668A-469C-848D-A8441DAF76A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A001DD6-668A-469C-848D-A8441DAF76A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A001DD6-668A-469C-848D-A8441DAF76A1}.Release|ARM.ActiveCfg = Release|Any CPU
+		{0A001DD6-668A-469C-848D-A8441DAF76A1}.Release|x64.ActiveCfg = Release|Any CPU
+		{0A001DD6-668A-469C-848D-A8441DAF76A1}.Release|x86.ActiveCfg = Release|Any CPU
+		{095B49F4-F394-459B-AAD4-05CD1DC02223}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{095B49F4-F394-459B-AAD4-05CD1DC02223}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{095B49F4-F394-459B-AAD4-05CD1DC02223}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{095B49F4-F394-459B-AAD4-05CD1DC02223}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{095B49F4-F394-459B-AAD4-05CD1DC02223}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{095B49F4-F394-459B-AAD4-05CD1DC02223}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{095B49F4-F394-459B-AAD4-05CD1DC02223}.Release|Any CPU.Build.0 = Release|Any CPU
+		{095B49F4-F394-459B-AAD4-05CD1DC02223}.Release|ARM.ActiveCfg = Release|Any CPU
+		{095B49F4-F394-459B-AAD4-05CD1DC02223}.Release|x64.ActiveCfg = Release|Any CPU
+		{095B49F4-F394-459B-AAD4-05CD1DC02223}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{44DFC678-39DA-4B5C-821E-FDA4F85F1571} = {62620587-DD42-4752-8512-605CA8A7D83F}
+		{0A001DD6-668A-469C-848D-A8441DAF76A1} = {62620587-DD42-4752-8512-605CA8A7D83F}
 		{1CA05560-8903-4D24-8C35-2FEC23D028C4} = {E280C99C-C27C-4B7F-B30C-7D2E32554DD4}
+		{095B49F4-F394-459B-AAD4-05CD1DC02223} = {7F39520D-6473-4561-8FB9-70BF555D1597}
 	EndGlobalSection
 EndGlobal
