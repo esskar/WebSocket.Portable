@@ -90,20 +90,20 @@ namespace WebSocket.Portable
 
         public string SecWebSocketAccept
         {
-            get { return this.GetHeader("Sec-WebSocket-Accept"); }
-            set { this.SetHeader("Sec-WebSocket-Accept", value); }
+            get { return this.GetHeader(Consts.HeaderSecWebSocketAccept); }
+            set { this.SetHeader(Consts.HeaderSecWebSocketAccept, value); }
         }
 
         public IList<string> SecWebSocketProtocol
         {
-            get { return this.GetHeaders("Sec-WebSocket-Protocol"); }
-            set { this.SetHeaders("Sec-WebSocket-Protocol", value); }
+            get { return this.GetHeaders(Consts.HeaderSecWebSocketProtocol); }
+            set { this.SetHeaders(Consts.HeaderSecWebSocketProtocol, value); }
         }
 
         public IList<string> SecWebSocketVersion
         {
-            get { return this.GetHeaders("Sec-WebSocket-Version"); }
-            set { this.SetHeaders("Sec-WebSocket-Version", value); }
+            get { return this.GetHeaders(Consts.HeaderSecWebSocketVersion); }
+            set { this.SetHeaders(Consts.HeaderSecWebSocketVersion, value); }
         }
 
         public string Upgrade

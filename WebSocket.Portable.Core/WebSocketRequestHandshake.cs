@@ -48,15 +48,15 @@ namespace WebSocket.Portable
             this.Host = uri.Host;
 
             // orgin
-            var scheme = originUri.Scheme == "http" || originUri.Scheme == "ws"
-                ? "http" : originUri.Scheme == "https" || originUri.Scheme == "wss" 
-                ? "https" : null;
+            var scheme = originUri.Scheme == Consts.SchemeHttp || originUri.Scheme == Consts.SchemeWs
+                ? Consts.SchemeHttp : originUri.Scheme == Consts.SchemeHttps || originUri.Scheme == Consts.SchemeWss
+                ? Consts.SchemeHttps : null;
             if (scheme == null)
                 throw new ArgumentException(ErrorMessages.InvalidScheme + originUri.Scheme, "originUri");
 
             var origin = new StringBuilder();
             origin.AppendFormat("{0}://{1}", scheme, originUri.Host);
-            if (scheme == "http" && originUri.Port != 80 || scheme == "https" && originUri.Port != 443)
+            if (scheme == Consts.SchemeHttp && originUri.Port != 80 || scheme == Consts.SchemeHttps && originUri.Port != 443)
                 origin.AppendFormat("{0}", originUri.Port);
             origin.Append(originUri.AbsolutePath);
             
@@ -85,32 +85,32 @@ namespace WebSocket.Portable
 
         public string Origin
         {
-            get { return this.GetHeader("Origin"); }
-            set { this.SetHeader("Origin", value); }
+            get { return this.GetHeader(Consts.HeaderOrigin); }
+            set { this.SetHeader(Consts.HeaderOrigin, value); }
         }
 
         public IList<string> SecWebSocketExtensions
         {
-            get { return this.GetHeaders("Sec-WebSocket-Extensions"); }
-            set { this.SetHeaders("Sec-WebSocket-Extensions", value); }
+            get { return this.GetHeaders(Consts.HeaderSecWebSocketExtensions); }
+            set { this.SetHeaders(Consts.HeaderSecWebSocketExtensions, value); }
         }
 
         public string SecWebSocketKey
         {
-            get { return this.GetHeader("Sec-WebSocket-Key"); }
-            set { this.SetHeader("Sec-WebSocket-Key", value); }
+            get { return this.GetHeader(Consts.HeaderSecWebSocketKey); }
+            set { this.SetHeader(Consts.HeaderSecWebSocketKey, value); }
         }
 
         public IList<string> SecWebSocketProtocol
         {
-            get { return this.GetHeaders("Sec-WebSocket-Protocol"); }
-            set { this.SetHeaders("Sec-WebSocket-Protocol", value); }
+            get { return this.GetHeaders(Consts.HeaderSecWebSocketProtocol); }
+            set { this.SetHeaders(Consts.HeaderSecWebSocketProtocol, value); }
         }
 
         public string SecWebSocketVersion
         {
-            get { return this.GetHeader("Sec-WebSocket-Version"); }
-            set { this.SetHeader("Sec-WebSocket-Version", value); }
+            get { return this.GetHeader(Consts.HeaderSecWebSocketVersion); }
+            set { this.SetHeader(Consts.HeaderSecWebSocketVersion, value); }
         }
 
         public string Upgrade
