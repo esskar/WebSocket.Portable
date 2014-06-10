@@ -33,26 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Compression\BlockType.cs" />
-    <Compile Include="Compression\CompressionMode.cs" />
-    <Compile Include="Compression\CopyEncoder.cs" />
-    <Compile Include="Compression\DeflateInput.cs" />
-    <Compile Include="Compression\Deflater.cs" />
-    <Compile Include="Compression\DeflateStream.cs" />
-    <Compile Include="Compression\DeflateStreamAsyncResult.cs" />
-    <Compile Include="Compression\FastEncoder.cs" />
-    <Compile Include="Compression\FastEncoderStatics.cs" />
-    <Compile Include="Compression\FastEncoderWindow.cs" />
-    <Compile Include="Compression\HuffmanTree.cs" />
-    <Compile Include="Compression\IFileFormatReader.cs" />
-    <Compile Include="Compression\IFileFormatWriter.cs" />
-    <Compile Include="Compression\Inflater.cs" />
-    <Compile Include="Compression\InflaterState.cs" />
-    <Compile Include="Compression\InputBuffer.cs" />
-    <Compile Include="Compression\Match.cs" />
-    <Compile Include="Compression\MatchState.cs" />
-    <Compile Include="Compression\OutputBuffer.cs" />
-    <Compile Include="Compression\OutputWindow.cs" />
     <Compile Include="Interfaces\IDataLayer.cs" />
     <Compile Include="Interfaces\IWebSocketExtension.cs" />
     <Compile Include="Interfaces\IWebSocketExtensionParameter.cs" />
@@ -81,6 +61,8 @@
       <DependentUpon>ErrorMessages.resx</DependentUpon>
     </Compile>
     <Compile Include="Security\Sha1Digest.cs" />
+    <Compile Include="Tasks\AsyncLock.cs" />
+    <Compile Include="Tasks\AsyncSemaphore.cs" />
     <Compile Include="Tasks\TaskAsyncHelper.cs" />
     <Compile Include="WebSocketBase.cs" />
     <Compile Include="WebSocketClientBase.cs" />
