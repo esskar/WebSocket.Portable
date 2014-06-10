@@ -15,7 +15,7 @@ namespace WebSocket.Portable
         private CancellationTokenSource _cts;
         
         public event Action Opened;
-        public event Action Closed;
+        public event Action<WebSocketErrorCode> Closed;
         public event Action<Exception> Error;
         public event Action<IWebSocketFrame> FrameReceived;
         public event Action<IWebSocketMessage> MessageReceived;
@@ -38,8 +38,20 @@ namespace WebSocket.Portable
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
+            if (!disposing) 
+                return;
+
+            if (_webSocket != null)
+            {
                 _webSocket.Dispose();
+                _webSocket = null;
+            }
+
+            if (_cts != null)
+            {
+                _cts.Dispose();
+                _cts = null;
+            }
         }
 
         /// <summary>
@@ -76,9 +88,20 @@ namespace WebSocket.Portable
 
         public Task CloseAsync(CancellationToken cancellationToken)
         {
-            return _webSocket == null
-                ? TaskAsyncHelper.Empty
-                : _webSocket.CloseAsync(WebSocketErrorCode.CloseNormal);
+            return this.CloseAsync(WebSocketErrorCode.CloseNormal, cancellationToken);
+        }
+
+        private Task CloseAsync(WebSocketErrorCode errorCode, CancellationToken cancellationToken)
+        {
+            if (_webSocket == null)
+                return TaskAsyncHelper.Empty;
+
+            return _webSocket.CloseAsync(errorCode, cancellationToken).Then(() =>
+            {
+                this.OnClosed(errorCode);
+                if (_cts != null)
+                    _cts.Cancel();
+            });
         }
 
         public Task SendAsync(string text)
@@ -120,6 +143,13 @@ namespace WebSocket.Portable
             return _webSocket.SendFrameAsync(frame, cancellationToken);
         }
 
+        protected virtual void OnClosed(WebSocketErrorCode errorCode)
+        {
+            var handler = this.Closed;
+            if (handler != null)
+                handler(errorCode);
+        }
+
         protected virtual void OnError(Exception exception)
         {
             var handler = this.Error;
@@ -150,17 +180,20 @@ namespace WebSocket.Portable
 
         private async void ReceiveLoop()
         {
-            _cts = new CancellationTokenSource();
+            var cts = new CancellationTokenSource();
+            _cts = cts;
 
             WebSocketMessage currentMessage = null;
-            while (!_cts.IsCancellationRequested)
-            {
+
+            var closeReason = WebSocketErrorCode.None;
+            while (!cts.IsCancellationRequested)
+            {                
                 try
                 {
-                    var frame = await _webSocket.ReceiveFrameAsync(_cts.Token);
+                    var frame = await _webSocket.ReceiveFrameAsync(cts.Token);
                     if (frame == null)
                     {
-                        // todo
+                        closeReason = WebSocketErrorCode.CloseInvalidData;                        
                         break;
                     }
 
@@ -211,15 +244,19 @@ namespace WebSocket.Portable
                 {
                     this.LogError("An web socket error occurred.", wsex);
                     this.OnError(wsex);
+                    closeReason = wsex.ErrorCode;
                     break;
                 }
                 catch (Exception ex)
                 {
                     this.LogError("An unexpected error occurred.", ex);
-                    this.OnError(ex);
+                    closeReason  = WebSocketErrorCode.CloseUnexpectedCondition;
                     break;
                 }
             }
+
+            if (closeReason != WebSocketErrorCode.None)
+                await this.CloseAsync(closeReason, cts.Token);            
         }
     }
 }

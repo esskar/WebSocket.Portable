@@ -15,8 +15,17 @@ namespace WebSocket.Portable.Interfaces
         /// <summary>
         /// Closes the socket asynchronous.
         /// </summary>
+        /// <param name="errorCode">The error code.</param>
         /// <returns></returns>
         Task CloseAsync(WebSocketErrorCode errorCode);
+
+        /// <summary>
+        /// Closes the socket asynchronous.
+        /// </summary>
+        /// <param name="errorCode">The error code.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        Task CloseAsync(WebSocketErrorCode errorCode, CancellationToken cancellationToken);
 
         /// <summary>
         /// Connects asynchronous.

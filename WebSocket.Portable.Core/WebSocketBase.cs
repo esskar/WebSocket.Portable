@@ -13,11 +13,12 @@ using WebSocket.Portable.Tasks;
 
 namespace WebSocket.Portable
 {
-    public abstract class WebSocketBase : ICanLog, IWebSocket
+    public abstract class WebSocketBase : IWebSocket, ICanLog
     {
+        private readonly AsyncLock _asyncLock;
         private readonly List<IWebSocketExtension> _extensions;
         private Uri _uri;
-        private int _state;
+        private WebSocketState _state;
         private ITcpConnection _tcp;
 
         /// <summary>
@@ -25,11 +26,12 @@ namespace WebSocket.Portable
         /// </summary>
         protected WebSocketBase()
         {
+            _asyncLock = new AsyncLock();
             _extensions = new List<IWebSocketExtension>();
-            _state = WebSocketState.Closed;            
+            _state = WebSocketState.Closed;
         }
 
-        public void RegisterExtension(IWebSocketExtension extension)
+        public async void RegisterExtension(IWebSocketExtension extension)
         {
             if (extension == null)
                 throw new ArgumentNullException("extension");
@@ -37,18 +39,26 @@ namespace WebSocket.Portable
             if (_extensions.Contains(extension))
                 throw new ArgumentException(ErrorMessages.ExtensionsAlreadyRegistered + extension.Name, "extension");
 
-            var oldState = Interlocked.CompareExchange(ref _state, _state, _state);
-            if (oldState != WebSocketState.Closed)
-                throw new InvalidOperationException(ErrorMessages.InvalidState + _state);
-
-            _extensions.Add(extension);
+            using (await _asyncLock.LockAsync())
+            {
+                if (_state != WebSocketState.Closed)
+                    throw new InvalidOperationException(ErrorMessages.InvalidState + _state);
+                _extensions.Add(extension);
+            }
         }
 
         public Task CloseAsync(WebSocketErrorCode errorCode)
         {
+            return this.CloseAsync(errorCode, CancellationToken.None);
+        }
 
-
-            return TaskAsyncHelper.Empty;
+        public async Task CloseAsync(WebSocketErrorCode errorCode, CancellationToken cancellationToken)
+        {
+            await this.RunAsync(WebSocketState.Open, WebSocketState.Closing, WebSocketState.Closed,
+                async () =>
+                      {
+                          await TaskAsyncHelper.Empty;
+                      }, cancellationToken);
         }
 
         /// <summary>
@@ -70,19 +80,19 @@ namespace WebSocket.Portable
         /// <exception cref="System.InvalidOperationException">Cannot connect because current state is  + _state</exception>
         public async Task ConnectAsync(string uri, CancellationToken cancellationToken)
         {
-            var oldState = Interlocked.CompareExchange(ref _state, WebSocketState.Connecting, WebSocketState.Closed);
-            if (oldState != WebSocketState.Closed)
-                throw new InvalidOperationException(ErrorMessages.InvalidState + _state);
+            await this.RunAsync(WebSocketState.Closed, WebSocketState.Connecting, WebSocketState.Connected,
+                async () =>
+                {
+                    if (uri == null)
+                        throw new ArgumentNullException("uri");
 
-            if (uri == null)
-                throw new ArgumentNullException("uri");
+                    _uri = WebSocketHelper.CreateWebSocketUri(uri);
 
-            _uri = WebSocketHelper.CreateWebSocketUri(uri);
-            
-            var useSsl = _uri.Scheme == "wss";
-            _tcp = await this.ConnectAsync(_uri.DnsSafeHost, _uri.Port, useSsl, cancellationToken);            
-            Interlocked.Exchange(ref _state, WebSocketState.Connected);
+                    var useSsl = _uri.Scheme == Consts.SchemeWss;
+                    _tcp = await this.ConnectAsync(_uri.DnsSafeHost, _uri.Port, useSsl, cancellationToken);
+                }, cancellationToken);
         }
+
 
         /// <summary>
         /// Connects asynchronous.
@@ -135,43 +145,42 @@ namespace WebSocket.Portable
         /// <returns></returns>
         public async Task<WebSocketResponseHandshake> SendHandshakeAsync(WebSocketRequestHandshake handshake, CancellationToken cancellationToken)
         {
-            var oldState = Interlocked.CompareExchange(ref _state, WebSocketState.Opening, WebSocketState.Connected);
-            if (oldState != WebSocketState.Connected)
-                throw new InvalidOperationException(ErrorMessages.InvalidState + _state);
+            return await this.RunAsync(WebSocketState.Connected, WebSocketState.Opening, WebSocketState.Open,
+                async () =>
+                {
+                    var data = handshake.ToString();
+                    await this.SendAsync(data, Encoding.UTF8, cancellationToken);
 
-            var data = handshake.ToString();
-            await this.SendAsync(data, Encoding.UTF8, cancellationToken);
+                    var responseHeaders = new List<string>();
+                    var line = await _tcp.ReadLineAsync(cancellationToken);
+                    while (!String.IsNullOrEmpty(line))
+                    {
+                        responseHeaders.Add(line);
+                        line = await _tcp.ReadLineAsync(cancellationToken);
+                    }
 
-            var responseHeaders = new List<string>();
-            var line = await _tcp.ReadLineAsync(cancellationToken);
-            while (!String.IsNullOrEmpty(line))
-            {
-                responseHeaders.Add(line);
-                line = await _tcp.ReadLineAsync(cancellationToken);
-            }
+                    var response = WebSocketResponseHandshake.Parse(responseHeaders);
+                    if (response.StatusCode != HttpStatusCode.SwitchingProtocols)
+                    {
+                        var versions = response.SecWebSocketVersion;
+                        if (versions != null && !versions.Intersect(Consts.SupportedClientVersions).Any())
+                            throw new WebSocketException(WebSocketErrorCode.HandshakeVersionNotSupported);
 
-            var response = WebSocketResponseHandshake.Parse(responseHeaders);
-            if (response.StatusCode != HttpStatusCode.SwitchingProtocols)
-            {
-                var versions = response.SecWebSocketVersion;
-                if (versions != null && !versions.Intersect(Consts.SupportedClientVersions).Any())
-                    throw new WebSocketException(WebSocketErrorCode.HandshakeVersionNotSupported);                    
-                    
-                throw new WebSocketException(WebSocketErrorCode.HandshakeInvalidStatusCode);
-            }
+                        throw new WebSocketException(WebSocketErrorCode.HandshakeInvalidStatusCode);
+                    }
 
-            var challenge = Encoding.UTF8.GetBytes(handshake.SecWebSocketKey + Consts.ServerGuid);
-            var hash = Sha1Digest.ComputeHash(challenge);
-            var calculatedAccept = Convert.ToBase64String(hash);
+                    var challenge = Encoding.UTF8.GetBytes(handshake.SecWebSocketKey + Consts.ServerGuid);
+                    var hash = Sha1Digest.ComputeHash(challenge);
+                    var calculatedAccept = Convert.ToBase64String(hash);
 
-            if (response.SecWebSocketAccept != calculatedAccept)
-                throw new WebSocketException(WebSocketErrorCode.HandshakeInvalidSecWebSocketAccept);       
+                    if (response.SecWebSocketAccept != calculatedAccept)
+                        throw new WebSocketException(WebSocketErrorCode.HandshakeInvalidSecWebSocketAccept);
 
-            response.RequestMessage = handshake;
+                    response.RequestMessage = handshake;
 
-            Interlocked.Exchange(ref _state, WebSocketState.Open);
+                    return response;
 
-            return response;
+                }, cancellationToken);
         }
 
         public Task SendFrameAsync(IWebSocketFrame frame)
@@ -228,6 +237,42 @@ namespace WebSocket.Portable
         public void Dispose()
         {
             // TODO
+        }
+
+        private Task RunAsync(WebSocketState requiredState, WebSocketState intermediateState,
+            WebSocketState finalState, Func<Task> action, CancellationToken cancellationToken)
+        {
+            if (action == null)
+                throw new ArgumentNullException("action");
+
+            return this.SetStateIfAsync(requiredState, intermediateState, cancellationToken)
+                .Then(action)
+                .Then(() => this.SetStateIfAsync(intermediateState, finalState, cancellationToken));
+        }
+
+        private async Task<T> RunAsync<T>(WebSocketState requiredState, WebSocketState intermediateState,
+            WebSocketState finalState, Func<Task<T>> action, CancellationToken cancellationToken)
+        {
+            if (action == null)
+                throw new ArgumentNullException("action");
+
+            await this.SetStateIfAsync(requiredState, intermediateState, cancellationToken);
+
+            var retval = await action();
+
+            await this.SetStateIfAsync(intermediateState, finalState, cancellationToken);
+
+            return retval;
+        }
+
+        private async Task SetStateIfAsync(WebSocketState requiredState, WebSocketState newState, CancellationToken cancellationToken)
+        {
+            using (await _asyncLock.LockAsync(cancellationToken))
+            {
+                if (_state != requiredState)
+                    throw new InvalidOperationException(ErrorMessages.InvalidState + _state);
+                _state = newState;
+            }
         }
     }
 }
