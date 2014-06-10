@@ -70,6 +70,15 @@ namespace WebSocket.Portable.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An web socket extension with the same name is already registered:.
+        /// </summary>
+        internal static string ExtensionsAlreadyRegistered {
+            get {
+                return ResourceManager.GetString("ExtensionsAlreadyRegistered", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A control frame is fragmented..
         /// </summary>
         internal static string FragmentedControlFrame {

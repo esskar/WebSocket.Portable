@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using WebSocket.Portable.Interfaces;
 using WebSocket.Portable.Internal;
 using WebSocket.Portable.Resources;
 
@@ -11,28 +12,29 @@ namespace WebSocket.Portable
 {
     public class WebSocketRequestHandshake : HttpRequestMessage
     {
-        private WebSocketRequestHandshake(HttpMethod method)
+        private WebSocketRequestHandshake(HttpMethod method, IEnumerable<string> protocol)
         {
             this.Upgrade = "websocket";
             this.Connection = "Upgrade";
-            this.SecWebSocketProtocol = new[] {"chat", "superchat"};
             this.SecWebSocketVersion = Consts.SupportedClientVersions[0];
             this.SecWebSocketKey = WebSocketHelper.CreateClientKey();
-
+            if (protocol != null)
+                this.SecWebSocketProtocol = protocol.ToArray();
+            
             this.Method = method;
         }
 
-        public WebSocketRequestHandshake(Uri uri)
-            : this(uri, uri) { }
+        public WebSocketRequestHandshake(Uri uri, IEnumerable<string> protocol = null)
+            : this(uri, uri, protocol) { }
 
-        public WebSocketRequestHandshake(HttpMethod method, Uri uri)
-            : this(method, uri, uri) { }
+        public WebSocketRequestHandshake(HttpMethod method, Uri uri, IEnumerable<string> protocol = null)
+            : this(method, uri, uri, protocol) { }
 
-        public WebSocketRequestHandshake(Uri uri, Uri originUri)
-            : this(HttpMethod.Get, uri, originUri) { }
+        public WebSocketRequestHandshake(Uri uri, Uri originUri, IEnumerable<string> protocol = null)
+            : this(HttpMethod.Get, uri, originUri, protocol) { }
 
-        public WebSocketRequestHandshake(HttpMethod method, Uri uri, Uri originUri)
-            : this(method)
+        public WebSocketRequestHandshake(HttpMethod method, Uri uri, Uri originUri, IEnumerable<string> protocol = null)
+            : this(method, protocol)
         {
             if (uri == null)
                 throw new ArgumentNullException("uri");
@@ -126,7 +128,39 @@ namespace WebSocket.Portable
                 if (!string.IsNullOrEmpty(value))
                     this.Headers.Upgrade.Add(new ProductHeaderValue(value));
             }
-        }        
+        }
+
+        public void AddExtension(IWebSocketExtension extension)
+        {
+            if (extension == null)
+                throw new ArgumentNullException("extension");
+
+            var value = new StringBuilder(extension.Name);
+            if (extension.Parameter != null)
+            {
+                value.AppendFormat("; {0}", extension.Parameter.Key);
+                if (!string.IsNullOrWhiteSpace(extension.Parameter.Value))
+                {
+                    var param = extension.Parameter.Value;
+                    var fmt = param.IndexOfAny(Consts.ExtensionParmeterValueNeedQuotesChars) < 0 || param.StartsAndEndsWith("\"")
+                        ? "={0}"
+                        : "=\"{0}\"";
+                    value.AppendFormat(fmt, param);
+                }
+                    
+            }
+            this.AddHeader(Consts.HeaderSecWebSocketExtensions, value.ToString());
+        }
+
+        private void AddHeader(string key, string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                throw new ArgumentNullException("value");
+
+            var headers = this.GetHeaders(key) ?? new List<string>();
+            headers.Add(value);
+            this.SetHeaders(key, headers);
+        }
 
         private string GetHeader(string key)
         {

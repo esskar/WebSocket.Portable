@@ -7,6 +7,12 @@ namespace WebSocket.Portable.Interfaces
     public interface IWebSocket : IDisposable
     {
         /// <summary>
+        /// Adds an extension to this websocket instance.
+        /// </summary>
+        /// <param name="extension">The extension.</param>
+        void RegisterExtension(IWebSocketExtension extension);
+
+        /// <summary>
         /// Closes the socket asynchronous.
         /// </summary>
         /// <returns></returns>

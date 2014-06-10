@@ -14,9 +14,9 @@ using WebSocket.Portable.Tasks;
 namespace WebSocket.Portable
 {
     public abstract class WebSocketBase : ICanLog, IWebSocket
-    {        
+    {
+        private readonly List<IWebSocketExtension> _extensions;
         private Uri _uri;
-        private WebSocketCompression _compression;
         private int _state;
         private ITcpConnection _tcp;
 
@@ -25,8 +25,23 @@ namespace WebSocket.Portable
         /// </summary>
         protected WebSocketBase()
         {
-            _compression = WebSocketCompression.None;
-            _state = WebSocketState.Closed;
+            _extensions = new List<IWebSocketExtension>();
+            _state = WebSocketState.Closed;            
+        }
+
+        public void RegisterExtension(IWebSocketExtension extension)
+        {
+            if (extension == null)
+                throw new ArgumentNullException("extension");
+
+            if (_extensions.Contains(extension))
+                throw new ArgumentException(ErrorMessages.ExtensionsAlreadyRegistered + extension.Name, "extension");
+
+            var oldState = Interlocked.CompareExchange(ref _state, _state, _state);
+            if (oldState != WebSocketState.Closed)
+                throw new InvalidOperationException(ErrorMessages.InvalidState + _state);
+
+            _extensions.Add(extension);
         }
 
         public Task CloseAsync(WebSocketErrorCode errorCode)
@@ -95,7 +110,11 @@ namespace WebSocket.Portable
         /// <returns></returns>
         public Task<WebSocketResponseHandshake> SendHandshakeAsync(CancellationToken cancellationToken)
         {
-            return this.SendHandshakeAsync(new WebSocketRequestHandshake(_uri), cancellationToken);
+            var handshake = new WebSocketRequestHandshake(_uri);
+            foreach (var extension in _extensions)
+                handshake.AddExtension(extension);
+
+            return this.SendHandshakeAsync(handshake, cancellationToken);
         }
 
         /// <summary>

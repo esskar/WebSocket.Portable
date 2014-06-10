@@ -120,6 +120,9 @@
   <data name="CompressedNonDataFrame" xml:space="preserve">
     <value>A non data frame is compressed.</value>
   </data>
+  <data name="ExtensionsAlreadyRegistered" xml:space="preserve">
+    <value>An web socket extension with the same name is already registered:</value>
+  </data>
   <data name="FragmentedControlFrame" xml:space="preserve">
     <value>A control frame is fragmented.</value>
   </data>
