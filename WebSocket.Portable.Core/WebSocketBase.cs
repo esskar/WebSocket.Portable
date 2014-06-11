@@ -52,9 +52,9 @@ namespace WebSocket.Portable
             return this.CloseAsync(errorCode, CancellationToken.None);
         }
 
-        public async Task CloseAsync(WebSocketErrorCode errorCode, CancellationToken cancellationToken)
+        public Task CloseAsync(WebSocketErrorCode errorCode, CancellationToken cancellationToken)
         {
-            await this.RunAsync(WebSocketState.Open, WebSocketState.Closing, WebSocketState.Closed,
+            return this.RunAsync(WebSocketState.Open, WebSocketState.Closing, WebSocketState.Closed,
                 async () =>
                       {
                           await TaskAsyncHelper.Empty;
@@ -78,9 +78,9 @@ namespace WebSocket.Portable
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">Cannot connect because current state is  + _state</exception>
-        public async Task ConnectAsync(string uri, CancellationToken cancellationToken)
+        public Task ConnectAsync(string uri, CancellationToken cancellationToken)
         {
-            await this.RunAsync(WebSocketState.Closed, WebSocketState.Connecting, WebSocketState.Connected,
+            return this.RunAsync(WebSocketState.Closed, WebSocketState.Connecting, WebSocketState.Connected,
                 async () =>
                 {
                     if (uri == null)
@@ -143,9 +143,9 @@ namespace WebSocket.Portable
         /// <param name="handshake">The handshake.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        public async Task<WebSocketResponseHandshake> SendHandshakeAsync(WebSocketRequestHandshake handshake, CancellationToken cancellationToken)
+        public Task<WebSocketResponseHandshake> SendHandshakeAsync(WebSocketRequestHandshake handshake, CancellationToken cancellationToken)
         {
-            return await this.RunAsync(WebSocketState.Connected, WebSocketState.Opening, WebSocketState.Open,
+            return this.RunAsync(WebSocketState.Connected, WebSocketState.Opening, WebSocketState.Open,
                 async () =>
                 {
                     var data = handshake.ToString();
@@ -201,11 +201,10 @@ namespace WebSocket.Portable
             return this.ReceiveFrameAsync(CancellationToken.None);
         }
 
-        public async Task<IWebSocketFrame> ReceiveFrameAsync(CancellationToken cancellationToken)
+        public Task<IWebSocketFrame> ReceiveFrameAsync(CancellationToken cancellationToken)
         {
             var frame = new WebSocketServerFrame();
-            await frame.ReadFromAsync(_tcp, cancellationToken);
-            return frame;
+            return frame.ReadFromAsync(_tcp, cancellationToken).Then(() => (IWebSocketFrame)frame);
         }
 
         /// <summary>
@@ -256,6 +255,8 @@ namespace WebSocket.Portable
             if (action == null)
                 throw new ArgumentNullException("action");
 
+            // can this be done without using async/await?
+
             await this.SetStateIfAsync(requiredState, intermediateState, cancellationToken);
 
             var retval = await action();
@@ -265,14 +266,14 @@ namespace WebSocket.Portable
             return retval;
         }
 
-        private async Task SetStateIfAsync(WebSocketState requiredState, WebSocketState newState, CancellationToken cancellationToken)
+        private Task SetStateIfAsync(WebSocketState requiredState, WebSocketState newState, CancellationToken cancellationToken)
         {
-            using (await _asyncLock.LockAsync(cancellationToken))
+            return _asyncLock.LockAsync(cancellationToken).Then(() =>
             {
                 if (_state != requiredState)
                     throw new InvalidOperationException(ErrorMessages.InvalidState + _state);
                 _state = newState;
-            }
+            });
         }
     }
 }
