@@ -13,6 +13,7 @@ namespace WebSocket.Portable
     {
         private TWebSocket _webSocket;
         private CancellationTokenSource _cts;
+        private int _maxFrameDataLength = Consts.MaxDefaultFrameDataLength;
         
         public event Action Opened;
         public event Action Closed;
@@ -48,7 +49,28 @@ namespace WebSocket.Portable
         /// <value>
         /// <c>true</c> if pong frames are send automatically; otherwise, <c>false</c>.
         /// </value>
-        public bool AutoSendPongResponse { get; set; }                       
+        public bool AutoSendPongResponse { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum length of data to be send in a single frame. If data is to be send is bigger, data will be fragmented.
+        /// </summary>
+        /// <value>
+        /// The maximum length of the frame data.
+        /// </value>
+        /// <exception cref="System.ArgumentOutOfRangeException">value</exception>
+        public int MaxFrameDataLength
+        {
+            get { return _maxFrameDataLength; }
+            set
+            {
+                if (_maxFrameDataLength == value) 
+                    return;
+
+                if (value <= 0 || value > Consts.MaxAllowedFrameDataLength)
+                    throw new ArgumentOutOfRangeException("value", string.Format("Value must be between 1 and {0}", Consts.MaxAllowedFrameDataLength));
+                _maxFrameDataLength = value;
+            }
+        }
 
         public Task OpenAsync(string uri)
         {
@@ -107,12 +129,25 @@ namespace WebSocket.Portable
 
         private Task SendAsync(bool isBinary, byte[] bytes, int offset, int length, CancellationToken cancellationToken)
         {
-            var frame = new WebSocketClientFrame
+            var task = TaskAsyncHelper.Empty;
+            var max = this.MaxFrameDataLength;
+            var opcode = isBinary ? WebSocketOpcode.Binary : WebSocketOpcode.Text;
+            while (length > 0)
             {
-                Opcode = isBinary ? WebSocketOpcode.Binary : WebSocketOpcode.Text,                
-            };
-            frame.Payload = new WebSocketPayload(frame, bytes, offset, length);
-            return this.SendAsync(frame, cancellationToken);
+                var size = Math.Min(length, max);
+                length -= size;
+
+                var frame = new WebSocketClientFrame
+                {
+                    Opcode = opcode,
+                    IsFin = length == 0,
+                };
+                frame.Payload = new WebSocketPayload(frame, bytes, offset, size);
+                offset += size;
+
+                task = task.Then(f => this.SendAsync(f, cancellationToken), frame);
+            }
+            return task;            
         }
 
         private Task SendAsync(IWebSocketFrame frame, CancellationToken cancellationToken)

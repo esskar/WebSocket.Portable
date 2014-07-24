@@ -18,6 +18,9 @@
 
         public const string ServerGuid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
-        public static readonly string[] SupportedClientVersions = { "13" };        
+        public static readonly string[] SupportedClientVersions = { "13" };
+
+        public const int MaxDefaultFrameDataLength = 1024;
+        public const int MaxAllowedFrameDataLength = 1024 * 256;
     }
 }
