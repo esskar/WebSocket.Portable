@@ -120,7 +120,7 @@ namespace WebSocket.Portable
             this.IsRsv3 = (headerBytes[0] & 0x10) == 0x10;
             this.Opcode = (WebSocketOpcode) (headerBytes[0] & 0x0f);
 
-            if (this.IsControlFrame && this.IsFin)
+            if (this.IsControlFrame && !this.IsFin)
                 throw new WebSocketException(WebSocketErrorCode.CloseInvalidData, ErrorMessages.FragmentedControlFrame);
 
             if (!this.IsDataFrame && this.IsRsv1)
