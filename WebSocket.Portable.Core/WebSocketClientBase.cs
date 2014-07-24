@@ -144,8 +144,9 @@ namespace WebSocket.Portable
                 };
                 frame.Payload = new WebSocketPayload(frame, bytes, offset, size);
                 offset += size;
+                opcode = WebSocketOpcode.Continuation;
 
-                task = task.Then(f => this.SendAsync(f, cancellationToken), frame);
+                task = task.Then(f => this.SendAsync(f, cancellationToken), frame);                
             }
             return task;            
         }
