@@ -20,7 +20,7 @@
 
         public static readonly string[] SupportedClientVersions = { "13" };
 
-        public const int MaxDefaultFrameDataLength = 1024;
+        public const int MaxDefaultFrameDataLength = 1016;
         public const int MaxAllowedFrameDataLength = 1024 * 256;
     }
 }
