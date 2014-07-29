@@ -5,12 +5,12 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using WebSocket.Portable.Tasks;
 
 namespace WebSocket.Portable.Net
 {
     public class TcpConnection : TcpConnectionBase
     {
-        private readonly object _sync = new object();
         private readonly TcpClient _client;
         private readonly bool _isSecure;
         private volatile Stream _stream;
@@ -51,15 +51,15 @@ namespace WebSocket.Portable.Net
 
                 // do not dispose _reader
             }
-            base.Dispose(disposing);            
+            base.Dispose(disposing);
         }
 
-        public async Task ConnectAsync(string host, int port, CancellationToken cancellationToken)
+        public Task ConnectAsync(string host, int port, CancellationToken cancellationToken)
         {
             try
             {
                 _host = host;
-                await _client.ConnectAsync(host, port);
+                return _client.ConnectAsync(host, port).Then(() => this.InitializeStreamAsync());
             }
             catch (SocketException se)
             {
@@ -88,7 +88,7 @@ namespace WebSocket.Portable.Net
         /// <returns></returns>
         public override Task WriteAsync(byte[] buffer, int offset, int length, CancellationToken cancellationToken)
         {
-            return this.Stream.WriteAsync(buffer, offset, length, cancellationToken);
+            return _stream.WriteAsync(buffer, offset, length, cancellationToken);
         }
 
         /// <summary>
@@ -101,38 +101,27 @@ namespace WebSocket.Portable.Net
         /// <returns></returns>
         public override Task<int> ReadAsync(byte[] buffer, int offset, int length, CancellationToken cancellationToken)
         {
-            return this.Stream.ReadAsync(buffer, offset, length, cancellationToken);
+            return _stream.ReadAsync(buffer, offset, length, cancellationToken);
         }
 
+
         /// <summary>
-        /// Gets the stream.
+        /// Gets the stream asynchronous.
         /// </summary>
-        /// <value>
-        /// The stream.
-        /// </value>
-        private Stream Stream
+        /// <returns></returns>
+        private Task InitializeStreamAsync()
         {
-            get
+
+            var stream = _client.GetStream();
+            if (!_isSecure)
             {
-                if (_stream != null)
-                    return _stream;
-
-                lock (_sync)
-                {
-                    if (_stream != null)
-                        return _stream;
-
-                    Stream stream = _client.GetStream();
-                    if (_isSecure)
-                    {
-                        var sslStream = new SslStream(stream);
-                        sslStream.AuthenticateAsClient(_host);                        
-                        stream = sslStream;
-                    }
-                    _stream = stream;                    
-                }
-                return _stream;
+                _stream = stream;
+                return TaskAsyncHelper.Empty;
             }
+            
+            var sslStream = new SslStream(stream);
+            _stream = sslStream;
+            return sslStream.AuthenticateAsClientAsync(_host);
         }
 
         /// <summary>
@@ -143,7 +132,7 @@ namespace WebSocket.Portable.Net
         /// </value>
         private StreamReader Reader
         {
-            get { return _reader ?? (_reader = new StreamReader(this.Stream, Encoding.UTF8)); }
+            get { return _reader ?? (_reader = new StreamReader(_stream, Encoding.UTF8)); }
         }
     }
 
