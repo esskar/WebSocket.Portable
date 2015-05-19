@@ -7,6 +7,10 @@ WebSocket.Portable is a PCL C# implementation of the [WebSocket][1] protocol. Th
 - Upgraded PCL assembly targets
 - Included [sockets-for-pcl](https://github.com/rdavisau/sockets-for-pcl) socket implementation.
 - Tied everything together
+- 
+### Dependencies
+
+- Microsoft HTTP Client Libraries (NuGet)
 
 ### TODO
 
