@@ -1,6 +1,6 @@
 ## WebSocket.Portable
 
-WebSocket.Portable is a PCL C# implementation of the [WebSocket][1] protocol. This plugin uses .net 4.5 and is compatable with Windows 8, Windows Phone, Windows Phone Silverlight, Xamarin Android, Xamarin iOS, and Xamarin iOS (Classic). This is a fork from https://github.com/esskar/WebSocket.Portable.
+WebSocket.Portable is a PCL C# implementation of the [WebSocket][1] protocol. This plugin uses .net 4.5 and is compatible with Windows 8, Windows Phone, Windows Phone Silverlight, Xamarin Android, Xamarin iOS, and Xamarin iOS (Classic). This is a fork from [esskar](https://github.com/esskar/WebSocket.Portable).
 
 ### Modifications
 
@@ -29,7 +29,3 @@ WebSocket.Portable is a PCL C# implementation of the [WebSocket][1] protocol. Th
 ### Questions
 
 Post onto the Github [issue system](https://github.com/NVentimiglia/WebSocket.Portable) or contact me via my [blog](http://nicholasventimiglia.com)
-
-[1]: http://www.rfc-editor.org/rfc/rfc6455.txt
-[2]: https://jabbr.net/#/rooms/WebSocketPortable
-[3]: https://jabbr.net/
