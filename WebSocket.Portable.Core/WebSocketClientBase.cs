@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +11,7 @@ namespace WebSocket.Portable
     public abstract class WebSocketClientBase<TWebSocket> : IDisposable, ICanLog
         where TWebSocket : class, IWebSocket, new()
     {
-        private TWebSocket _webSocket;
+        protected TWebSocket _webSocket;
         private CancellationTokenSource _cts;
         private int _maxFrameDataLength = Consts.MaxDefaultFrameDataLength;
         
@@ -79,8 +79,8 @@ namespace WebSocket.Portable
 
         public async Task OpenAsync(string uri, CancellationToken cancellationToken)
         {
-            if (_webSocket != null)
-                throw new InvalidOperationException("Client has been opened before.");
+          //  if (_webSocket != null)
+           //     throw new InvalidOperationException("Client has been opened before.");
 
             _webSocket = new TWebSocket();
             await _webSocket.ConnectAsync(uri, cancellationToken);
@@ -93,14 +93,25 @@ namespace WebSocket.Portable
 
         public Task CloseAsync()
         {
-            return this.CloseAsync(CancellationToken.None);
+            return CloseInternal();
         }
 
         public Task CloseAsync(CancellationToken cancellationToken)
         {
-            return _webSocket == null
-                ? TaskAsyncHelper.Empty
-                : _webSocket.CloseAsync(WebSocketErrorCode.CloseNormal);
+            return CloseInternal();
+        }
+
+        private async Task CloseInternal()
+        {
+            if (_webSocket != null)
+            {
+                await _webSocket.CloseAsync(WebSocketErrorCode.CloseNormal);
+
+                if (Closed != null)
+                {
+                    Closed();
+                }
+            }
         }
 
         public Task SendAsync(string text)
@@ -184,6 +195,11 @@ namespace WebSocket.Portable
                 handler(message);
         }
 
+        void IDisposable.Dispose()
+        {
+            Dispose();
+        }
+
         private async void ReceiveLoop()
         {
             _cts = new CancellationTokenSource();
@@ -204,6 +220,10 @@ namespace WebSocket.Portable
 
                     if (frame.Opcode == WebSocketOpcode.Close)
                     {
+                        if (Closed != null)
+                        {
+                            Closed();
+                        }
                         break;
                     }
                     if (frame.IsControlFrame)

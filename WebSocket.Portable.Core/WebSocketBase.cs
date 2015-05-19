@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -44,10 +44,9 @@ namespace WebSocket.Portable
             _extensions.Add(extension);
         }
 
-        public Task CloseAsync(WebSocketErrorCode errorCode)
+        public virtual Task CloseAsync(WebSocketErrorCode errorCode)
         {
-
-
+            _state = WebSocketState.Closed;            
             return TaskAsyncHelper.Empty;
         }
 
@@ -225,9 +224,9 @@ namespace WebSocket.Portable
             return _tcp.WriteAsync(buffer, offset, length, cancellationToken);
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
-            // TODO
+            _tcp.Dispose();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 
 namespace WebSocket.Portable.Compression
@@ -39,7 +39,7 @@ namespace WebSocket.Portable.Compression
 
         private const int MinBlockSize = 256;
         private const int MaxHeaderFooterGoo = 120;
-        private const int CleanCopySize = DeflateStream.DefaultBufferSize - MaxHeaderFooterGoo;
+        private const int CleanCopySize = 8192 - MaxHeaderFooterGoo;
         private const double BadCompressionThreshold = 1.0;
 
         private readonly FastEncoder _deflateEncoder;
