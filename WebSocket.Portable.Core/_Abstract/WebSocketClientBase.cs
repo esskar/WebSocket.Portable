@@ -79,8 +79,8 @@ namespace WebSocket.Portable
 
         public async Task OpenAsync(string uri, CancellationToken cancellationToken)
         {
-          //  if (_webSocket != null)
-           //     throw new InvalidOperationException("Client has been opened before.");
+            if (_webSocket != null)
+                throw new InvalidOperationException("Client has been opened before.");
 
             _webSocket = new TWebSocket();
             await _webSocket.ConnectAsync(uri, cancellationToken);
@@ -103,15 +103,24 @@ namespace WebSocket.Portable
 
         private async Task CloseInternal()
         {
+            if (_cts != null)
+            {
+
+                _cts.Cancel();
+                _cts = null;
+            }
+
             if (_webSocket != null)
             {
                 await _webSocket.CloseAsync(WebSocketErrorCode.CloseNormal);
-
+                
                 if (Closed != null)
                 {
                     Closed();
                 }
+
             }
+
         }
 
         public Task SendAsync(string text)
@@ -222,7 +231,7 @@ namespace WebSocket.Portable
                     {
                         if (Closed != null)
                         {
-                            Closed();
+                          await  CloseAsync();
                         }
                         break;
                     }

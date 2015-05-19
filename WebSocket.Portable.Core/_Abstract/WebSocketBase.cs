@@ -46,7 +46,8 @@ namespace WebSocket.Portable
 
         public virtual Task CloseAsync(WebSocketErrorCode errorCode)
         {
-            _state = WebSocketState.Closed;            
+            _state = WebSocketState.Closed;
+            _tcp.Dispose();
             return TaskAsyncHelper.Empty;
         }
 
