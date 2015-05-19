@@ -2,9 +2,9 @@ using System.Threading.Tasks;
 
 namespace System.Threading
 {
-	internal delegate void TimerCallback(object state);
+    public delegate void TimerCallback(object state);
 
-    internal sealed class Timer 
+    public sealed class Timer 
     {
 		TimerCallback Callback { get; set; }
 		object State { get; set; }
@@ -12,7 +12,7 @@ namespace System.Threading
 		bool IsRunning { get; set; }
         TimerInternal Internal;
 
-        internal Timer(TimerCallback callback, int period, object state = null)
+        public Timer(TimerCallback callback, int period, object state = null)
         {
             Callback = callback;
             State = state;

@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Sockets.Plugin;
+using WebSocket.Portable.Net;
 
-namespace WebSocket.Portable.Net
+namespace WebSocket.Portable
 {
     public class TcpConnection : TcpConnectionBase
     {
