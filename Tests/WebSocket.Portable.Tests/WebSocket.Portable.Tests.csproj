@@ -72,10 +72,6 @@
       <Project>{fc55954c-88e3-4477-a93e-0f734224cfb6}</Project>
       <Name>WebSocket.Portable.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\WebSocket.Portable\WebSocket.Portable.csproj">
-      <Project>{DA181825-00B2-4D06-B47C-FD687735D12C}</Project>
-      <Name>WebSocket.Portable</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

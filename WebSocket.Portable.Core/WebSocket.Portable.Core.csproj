@@ -10,8 +10,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WebSocket.Portable</RootNamespace>
     <AssemblyName>WebSocket.Portable.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Profile36</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
   </PropertyGroup>
@@ -82,21 +82,26 @@
     </Compile>
     <Compile Include="Security\Sha1Digest.cs" />
     <Compile Include="Tasks\TaskAsyncHelper.cs" />
-    <Compile Include="WebSocketBase.cs" />
-    <Compile Include="WebSocketClientBase.cs" />
-    <Compile Include="WebSocketClientFrame.cs" />
-    <Compile Include="WebSocketCompression.cs" />
-    <Compile Include="WebSocketErrorCode.cs" />
-    <Compile Include="WebSocketException.cs" />
-    <Compile Include="WebSocketFrame.cs" />
-    <Compile Include="WebSocketHelper.cs" />
-    <Compile Include="WebSocketMessage.cs" />
-    <Compile Include="WebSocketOpcode.cs" />
-    <Compile Include="WebSocketPayload.cs" />
-    <Compile Include="WebSocketRequestHandshake.cs" />
-    <Compile Include="WebSocketResponseHandshake.cs" />
-    <Compile Include="WebSocketServerFrame.cs" />
-    <Compile Include="WebSocketState.cs" />
+    <Compile Include="_Abstract\WebSocketBase.cs" />
+    <Compile Include="_Abstract\WebSocketClientBase.cs" />
+    <Compile Include="_Abstract\WebSocketClientFrame.cs" />
+    <Compile Include="_Abstract\WebSocketCompression.cs" />
+    <Compile Include="_Abstract\WebSocketErrorCode.cs" />
+    <Compile Include="_Abstract\WebSocketException.cs" />
+    <Compile Include="_Abstract\WebSocketFrame.cs" />
+    <Compile Include="_Abstract\WebSocketHelper.cs" />
+    <Compile Include="_Abstract\WebSocketMessage.cs" />
+    <Compile Include="_Abstract\WebSocketOpcode.cs" />
+    <Compile Include="_Abstract\WebSocketPayload.cs" />
+    <Compile Include="_Abstract\WebSocketRequestHandshake.cs" />
+    <Compile Include="_Abstract\WebSocketResponseHandshake.cs" />
+    <Compile Include="_Abstract\WebSocketServerFrame.cs" />
+    <Compile Include="_Abstract\WebSocketState.cs" />
+    <Compile Include="_Implementation\ConcurrentDictionary.cs" />
+    <Compile Include="_Implementation\TcpConnection.cs" />
+    <Compile Include="_Implementation\Timer.cs" />
+    <Compile Include="_Implementation\WebSocket.cs" />
+    <Compile Include="_Implementation\WebSocketClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -105,29 +110,25 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Threading.Tasks">
-      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\portable-net40+sl4+win8+wp71+wpa81\Microsoft.Threading.Tasks.dll</HintPath>
+    <Reference Include="Sockets.Plugin, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\rda.SocketsForPCL.1.1.8\lib\portable-net45+wp8+wpa81+win8+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Sockets.Plugin.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Threading.Tasks.Extensions">
-      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\portable-net40+sl4+win8+wp71+wpa81\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+    <Reference Include="Sockets.Plugin.Abstractions, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\rda.SocketsForPCL.1.1.8\lib\portable-net45+wp8+wpa81+win8+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Sockets.Plugin.Abstractions.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.IO">
-      <HintPath>..\packages\Microsoft.Bcl.1.1.9\lib\portable-net40+sl4+win8+wp8+wpa81\System.IO.dll</HintPath>
+    <Reference Include="System.Net.Http, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Net.Http">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.dll</HintPath>
+    <Reference Include="System.Net.Http.Extensions, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Extensions.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Net.Http.Extensions">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http.Primitives">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Primitives.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime">
-      <HintPath>..\packages\Microsoft.Bcl.1.1.9\lib\portable-net40+sl4+win8+wp8+wpa81\System.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks">
-      <HintPath>..\packages\Microsoft.Bcl.1.1.9\lib\portable-net40+sl4+win8+wp8+wpa81\System.Threading.Tasks.dll</HintPath>
+    <Reference Include="System.Net.Http.Primitives, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Primitives.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

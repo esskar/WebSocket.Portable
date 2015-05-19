@@ -1,4 +1,5 @@
-﻿using System.IO;
+using System;
+using System.IO;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebSocket.Portable.Compression;
@@ -78,9 +79,10 @@ namespace WebSocket.Portable.Tests.Compression
 
         private static Stream CreateDeflateStream(Stream input, bool compress, bool our)
         {
+            throw new NotImplementedException();
             if (our)
             {
-                return compress ? new DeflateStream(input, CompressionMode.Compress, true) : new DeflateStream(input, CompressionMode.Decompress, true);
+               // return compress ? new DeflateStream(input, CompressionMode.Compress, true) : new DeflateStream(input, CompressionMode.Decompress, true);
             }
             return compress ? new System.IO.Compression.DeflateStream(input, System.IO.Compression.CompressionMode.Compress, true) : new System.IO.Compression.DeflateStream(input, System.IO.Compression.CompressionMode.Decompress, true);
         }
