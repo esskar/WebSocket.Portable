@@ -15,6 +15,7 @@ WebSocket.Portable is a PCL C# implementation of the [WebSocket protocol](https:
 
 - Merge with esskar ot Publish onto  NuGet.
 - Remove abstraction which is no longer needed.
+- Xamarin.Forms sample
 
 ### Usage
 
