@@ -28,11 +28,11 @@ https://www.nuget.org/packages/WebSocket.Portable.Core/
 ### Thanks
 
 - rdavisau : For sockets-for-pcl which makes this possible. A great developer to work with who jumped to the rescue.
-- 
+
 - esskar : For started the websocket abstraction.
-- 
+
 - Xamarin : For awesome cross platform development tools
-- 
+
 
 ### Usage
 
