@@ -19,12 +19,6 @@ https://www.nuget.org/packages/WebSocket.Portable.Core/
   - Microsoft.Net.Http
 - [Sockets For PCL](https://github.com/rdavisau/sockets-for-pcl) (NuGet)
 
-### TODO
-
-- Remove abstraction which is no longer needed.
-- Xamarin.Forms sample
-
-
 ### Usage
 
     var client = new WebSocketClient();
@@ -38,10 +32,16 @@ https://www.nuget.org/packages/WebSocket.Portable.Core/
 	// send some data
     await client.SendAsync("WebSocket.Portable rocks!");
 
+### TODO
+
+- Remove abstraction which is no longer needed.
+- Xamarin.Forms sample
+
+
 
 ### Thanks
 
-- rdavisau : For sockets-for-pcl which makes this possible. A great developer to work with who jumped to the rescue.
+- rdavisau : For sockets-for-pcl which makes this possible.
 
 - esskar : For started the websocket abstraction.
 
