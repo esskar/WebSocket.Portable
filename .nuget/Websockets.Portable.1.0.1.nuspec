@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>Websockets.Portable</id>
+        <version>1.0.1</version>
+        <title>Websockets Portable (PCL78 for Xamarin)</title>
+        <authors>Nicholas Ventimiglia,Sascha Kiefer</authors>
+        <owners>Nicholas Ventimiglia</owners>
+        <projectUrl>https://github.com/NVentimiglia/WebSocket.Portable</projectUrl>
+        <iconUrl>https://raw.githubusercontent.com/NVentimiglia/WebSocket.Portable/master/.nuget/Icon.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>PCL 78 Websocket client. Perfect for Xamarin PCL apps. Utilize's sockets-for-pcl to do the heavy lifting.</description>
+        <summary>PCL 78 Websocket client. Perfect for Xamarin PCL apps.</summary>
+        <releaseNotes>Early Release. More coming soon.</releaseNotes>
+        <copyright />
+        <language>en-US</language>
+        <tags>websockets, sockets, pcl, xamarin</tags>
+    </metadata>
+    <files>
+        <file src="lib\WebSocket.Portable.Core.dll" target="lib\WebSocket.Portable.Core.dll" />
+    </files>
+</package>

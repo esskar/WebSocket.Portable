@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>WebSocket.Portable.Core</id>
+        <version>1.0.5617.37130</version>
+        <title>WebSocket Portable  (PCL for Xamarin)</title>
+        <authors>Nicholas Ventimiglia,Sascha Kiefer</authors>
+        <owners>Nicholas Ventimiglia</owners>
+        <projectUrl>https://github.com/NVentimiglia/WebSocket.Portable</projectUrl>
+        <iconUrl>https://raw.githubusercontent.com/NVentimiglia/WebSocket.Portable/master/.nuget/Icon.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>PCL 78 Websocket client. Perfect for Xamarin PCL apps. Utilize's sockets-for-pcl to do the heavy lifting.</description>
+        <summary>PCL 78 Websocket client. Perfect for Xamarin PCL apps.</summary>
+        <releaseNotes>Initial release</releaseNotes>
+        <copyright>Copyright © 2015</copyright>
+        <language>en-US</language>
+        <tags>websockets, sockets, pcl, xamarin</tags>
+        <dependencies>
+            <dependency id="Microsoft.Bcl" version="1.1.10" />
+            <dependency id="Microsoft.Bcl.Build" version="1.0.14" />
+            <dependency id="Microsoft.Bcl.Async" version="1.0.168" />
+            <dependency id="Microsoft.Net.Http" version="2.2.29" />
+            <dependency id="rda.SocketsForPCL" version="1.1.8" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="lib\portable-net45+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10\WebSocket.Portable.Core.dll" target="lib\portable-net45+win+wpa81+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10\WebSocket.Portable.Core.dll" />
+    </files>
+</package>
