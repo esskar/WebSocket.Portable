@@ -8,7 +8,6 @@ namespace WebSocket.Portable
         {
             if(exception is ObjectDisposedException){
                 var e =(ObjectDisposedException) exception;
-                System.Diagnostics.Debug.WriteLine(e.ObjectName);
             }
             base.OnError(exception);
         }
