@@ -43,7 +43,7 @@ https://www.nuget.org/packages/WebSocket.Portable.Core/
 
 - rdavisau : For sockets-for-pcl which makes this possible.
 
-- esskar : For started the websocket abstraction.
+- esskar : For starting the websocket abstraction.
 
 - Xamarin : For awesome cross platform development tools
 
