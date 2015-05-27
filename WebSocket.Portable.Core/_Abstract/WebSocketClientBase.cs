@@ -83,11 +83,9 @@ namespace WebSocket.Portable
                 throw new InvalidOperationException("Client has been opened before.");
 
             _webSocket = new TWebSocket();
-            await _webSocket.ConnectAsync(uri, cancellationToken);
+			await _webSocket.ConnectAsync(uri, cancellationToken);
             await _webSocket.SendHandshakeAsync(cancellationToken);
-            
             this.ReceiveLoop();
-
             this.OnOpened();
         }
 
@@ -105,7 +103,6 @@ namespace WebSocket.Portable
         {
             if (_cts != null)
             {
-
                 _cts.Cancel();
                 _cts = null;
             }
@@ -118,9 +115,7 @@ namespace WebSocket.Portable
                 {
                     Closed();
                 }
-
             }
-
         }
 
         public Task SendAsync(string text)

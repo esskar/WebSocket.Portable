@@ -25,7 +25,7 @@ namespace Websocket.Portable.Xam
 			}
 		}
 
-		private string _message;
+		private string _message = "Hello World";
 		public string Message {
 			get {
 				return _message;
