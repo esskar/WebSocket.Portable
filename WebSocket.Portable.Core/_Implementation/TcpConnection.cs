@@ -53,10 +53,10 @@ namespace WebSocket.Portable
         {
             var port = host.Contains("wss") ? 443 : 80;
             try
-            {
-                await _client.ConnectAsync(host, port);
+			{
+				await _client.ConnectAsync(host, port);
                 _writestream = _client.WriteStream;
-                _readstream = _client.ReadStream;
+				_readstream = _client.ReadStream;
             }
             catch (Exception se)
             {

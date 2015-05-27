@@ -85,10 +85,10 @@ namespace WebSocket.Portable
             _webSocket = new TWebSocket();
             await _webSocket.ConnectAsync(uri, cancellationToken);
             await _webSocket.SendHandshakeAsync(cancellationToken);
+            
+            this.ReceiveLoop();
 
             this.OnOpened();
-
-            this.ReceiveLoop();
         }
 
         public Task CloseAsync()
