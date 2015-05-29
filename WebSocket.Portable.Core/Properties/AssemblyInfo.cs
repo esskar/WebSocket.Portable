@@ -7,8 +7,8 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCopyright("Copyright © 2014")]
 [assembly: NeutralResourcesLanguage("en")]
 
-[assembly: AssemblyVersion("1.0.7")]
-[assembly: AssemblyFileVersion("1.0.7")]
+[assembly: AssemblyVersion("1.0.8")]
+[assembly: AssemblyFileVersion("1.0.8")]
 
 [assembly: InternalsVisibleTo("WebSocket.Portable.Tests")]
 [assembly: AssemblyDescriptionAttribute("Websocket implementation for PCL and Xamarin")]

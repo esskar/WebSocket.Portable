@@ -12,7 +12,6 @@ namespace WebSocket.Portable
     {
         public readonly TcpSocketClient _client;
         private readonly bool _isSecure;
-        //private StreamReader _reader;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TcpConnection" /> class.
@@ -35,16 +34,6 @@ namespace WebSocket.Portable
             get { return _isSecure; }
         }
 
-        /// <summary>
-        /// Gets the reader.
-        /// </summary>
-        /// <value>
-        /// The reader.
-        /// </value>
-        //private StreamReader Reader
-       // {
-       //     get { return _reader ?? (_reader = new StreamReader(_client.ReadStream, Encoding.UTF8)); }
-       // }
 
         public async Task ConnectAsync(string host, CancellationToken cancellationToken)
         {
@@ -104,8 +93,6 @@ namespace WebSocket.Portable
 
                  return sb.ToString();
              }, cancellationToken);
-
-            // return Reader.ReadLineAsync();
         }
 
         /// <summary>

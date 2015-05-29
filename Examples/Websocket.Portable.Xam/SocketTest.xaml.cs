@@ -14,7 +14,7 @@ namespace Websocket.Portable.Xam
 		System.Diagnostics.Stopwatch watch;
 		WebSocket.Portable.WebSocketClient client;
 		const string connectionUrl = "ws://";
-
+			
 		Action OnOpen;
 
 		public Tester (Action onOpen)

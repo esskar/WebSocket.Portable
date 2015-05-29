@@ -11,7 +11,7 @@ namespace Websocket.Portable.Xam
 	{
 		public App()
 		{
-			MainPage = new TestView();				
+			MainPage = new MainView();				
 		}
 
 		protected override void OnStart()

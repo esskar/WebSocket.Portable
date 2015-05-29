@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,11 +9,8 @@ using WebSocket.Portable.Resources;
 
 namespace WebSocket.Portable
 {
-    public abstract class WebSocketFrame : IWebSocketFrame
+    internal abstract class WebSocketFrame : IWebSocketFrame
     {
-        //public static int Reads { get; set; }
-        //public static int Reads2 { get; set; }
-
         public bool IsFin { get; set; }
 
         public bool IsMasked { get; protected set; }
@@ -124,17 +120,13 @@ namespace WebSocket.Portable
 		    
         public async Task ReadFromAsync(IDataLayer layer, CancellationToken cancellationToken)
         {
-            //Reads++;
             var headerBytes = await layer.ReadAsync(2, cancellationToken);
-            //Reads2++;
 
             this.IsFin = (headerBytes[0] & 0x80) == 0x80;
             this.IsRsv1 = (headerBytes[0] & 0x40) == 0x40;
             this.IsRsv2 = (headerBytes[0] & 0x20) == 0x20;
             this.IsRsv3 = (headerBytes[0] & 0x10) == 0x10;
             this.Opcode = (WebSocketOpcode)(headerBytes[0] & 0x0f);
-
-            //
 
             if (this.IsControlFrame && !this.IsFin)
                 throw new WebSocketException(WebSocketErrorCode.CloseInvalidData, ErrorMessages.FragmentedControlFrame);
@@ -143,7 +135,7 @@ namespace WebSocket.Portable
                 throw new WebSocketException(WebSocketErrorCode.CloseInvalidData, ErrorMessages.CompressedNonDataFrame);
 
             this.IsMasked = (headerBytes[1] & 0x80) == 0x80;
-            //
+            
             if (this.IsMasked)
                 this.MaskingKey = await layer.ReadAsync(4, cancellationToken);
             else
@@ -153,8 +145,7 @@ namespace WebSocket.Portable
             if (this.IsControlFrame && payloadLength > 125)
                 throw new WebSocketException(WebSocketErrorCode.CloseInconstistentData, ErrorMessages.PayloadLengthControlFrame);
 
-            //
-
+            
             var extendedPayloadLengthSize = payloadLength < 126 ? 0 : payloadLength < 127 ? 2 : 8;
             if (extendedPayloadLengthSize > 0)
             {
