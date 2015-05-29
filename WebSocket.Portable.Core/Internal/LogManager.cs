@@ -1,21 +1,21 @@
-﻿
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace WebSocket.Portable.Internal
 {
-    using LogReceiver = Action<Type, LogLevel, string>;
+    public delegate void LogReceiver(LogLevel level, string message);
 
-    internal sealed class LogManager
+    public sealed class LogManager
     {
         public static readonly LogManager Instance = new LogManager();
 
-        private readonly Dictionary<int, LogReceiver> _receivers;
+        private readonly List<LogReceiver> _receivers;
 
         private LogManager()
         {
-            _receivers = new Dictionary<int, LogReceiver>();
+            _receivers = new List<LogReceiver>();
         }
 
         public void LogMessage(Type type, LogLevel logLevel, string message)
@@ -23,14 +23,14 @@ namespace WebSocket.Portable.Internal
             IList<LogReceiver> receivers;
             lock (_receivers)
             {
-                receivers = _receivers.Values.ToList();
+                receivers = _receivers.ToList();
             }
             
             foreach (var receiver in receivers)
             {
                 try
                 {
-                    receiver(type, logLevel, message);
+                    receiver(logLevel, message);
                 }
                 // ReSharper disable once EmptyGeneralCatchClause
                 catch (Exception)
@@ -40,42 +40,21 @@ namespace WebSocket.Portable.Internal
             }
         }
 
-        public IDisposable AddReceiver(LogReceiver receiver)
+        public void AddReceiver(LogReceiver receiver)
         {
             if (receiver == null)
                 throw new ArgumentNullException("receiver");
 
             lock (_receivers)
             {
-                var guid = _receivers.Count + 1;
-                _receivers.Add(guid, receiver);
-                return new Reference(this, guid);
+                _receivers.Add(receiver);
             }
         }
 
-        private void Remove(int guid)
+        public void Remove(LogReceiver receiver)
         {
             lock (_receivers)
-                _receivers.Remove(guid);
-        }
-
-        struct Reference : IDisposable
-        {
-            private readonly LogManager _logManager;
-            private int _guid;
-
-            public Reference(LogManager logManager, int guid)
-            {
-                _logManager = logManager;
-                _guid = guid;
-            }
-
-            public void Dispose()
-            {
-                if (_guid > 0)
-                    _logManager.Remove(_guid);
-                _guid = 0;
-            }
+                _receivers.Remove(receiver);
         }
     }
 }

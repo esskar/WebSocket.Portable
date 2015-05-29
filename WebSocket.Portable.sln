@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocket.Portable.Core", "WebSocket.Portable.Core\WebSocket.Portable.Core.csproj", "{FC55954C-88E3-4477-A93E-0F734224CFB6}"
@@ -78,8 +78,6 @@ Global
 		{FC55954C-88E3-4477-A93E-0F734224CFB6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{FC55954C-88E3-4477-A93E-0F734224CFB6}.Release|x64.ActiveCfg = Release|Any CPU
 		{FC55954C-88E3-4477-A93E-0F734224CFB6}.Release|x86.ActiveCfg = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -11,11 +10,9 @@ namespace WebSocket.Portable
 {
     public class TcpConnection : TcpConnectionBase
     {
-        private readonly TcpSocketClient _client;
+        public readonly TcpSocketClient _client;
         private readonly bool _isSecure;
-        private StreamReader _reader;
-        private volatile Stream _readstream;
-        private volatile Stream _writestream;
+        //private StreamReader _reader;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TcpConnection" /> class.
@@ -44,19 +41,17 @@ namespace WebSocket.Portable
         /// <value>
         /// The reader.
         /// </value>
-        private StreamReader Reader
-        {
-            get { return _reader ?? (_reader = new StreamReader(_readstream, Encoding.UTF8)); }
-        }
+        //private StreamReader Reader
+       // {
+       //     get { return _reader ?? (_reader = new StreamReader(_client.ReadStream, Encoding.UTF8)); }
+       // }
 
         public async Task ConnectAsync(string host, CancellationToken cancellationToken)
         {
             var port = host.Contains("wss") ? 443 : 80;
             try
-			{
-				await _client.ConnectAsync(host, port);
-                _writestream = _client.WriteStream;
-				_readstream = _client.ReadStream;
+            {
+                await _client.ConnectAsync(host, port, IsSecure);
             }
             catch (Exception se)
             {
@@ -74,8 +69,9 @@ namespace WebSocket.Portable
         /// <returns></returns>
         public override Task<int> ReadAsync(byte[] buffer, int offset, int length, CancellationToken cancellationToken)
         {
-            return _readstream.ReadAsync(buffer, offset, length, cancellationToken);
+            return _client.ReadStream.ReadAsync(buffer, offset, length, cancellationToken);
         }
+
 
         /// <summary>
         /// Receives a line asynchronous.
@@ -84,7 +80,32 @@ namespace WebSocket.Portable
         /// <returns></returns>
         public override Task<string> ReadLineAsync(CancellationToken cancellationToken)
         {
-            return Reader.ReadLineAsync();
+            return Task.Run(() =>
+             {
+                 var sb = new StringBuilder();
+                 var b = 0;
+                 do
+                 {
+                     b = _client.ReadStream.ReadByte();
+                     var ch = Convert.ToChar(b);
+
+                     switch (ch)
+                     {
+                         case '\r':
+                             break;
+                         case '\n':
+                             return sb.ToString();
+                         default:
+                             sb.Append(ch);
+                             break;
+                     }
+
+                 } while (b != 0);
+
+                 return sb.ToString();
+             }, cancellationToken);
+
+            // return Reader.ReadLineAsync();
         }
 
         /// <summary>
@@ -97,9 +118,9 @@ namespace WebSocket.Portable
         /// <returns></returns>
         public override Task WriteAsync(byte[] buffer, int offset, int length, CancellationToken cancellationToken)
         {
-            return _writestream.WriteAsync(buffer, offset, length, cancellationToken);
+            return _client.WriteStream.WriteAsync(buffer, offset, length, cancellationToken);
         }
-        
+
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
@@ -108,18 +129,10 @@ namespace WebSocket.Portable
         {
             if (disposing)
             {
-                if (Reader != null)
-                    Reader.Dispose();
-
-                if (_writestream != null)
-                    _writestream.Dispose();
-                if (_readstream != null)
-                    _readstream.Dispose();
-                _writestream = null;
-                _readstream = null;
-                _client.Dispose();
-
-                // do not dispose _reader
+                //  if (Reader != null)
+                //       Reader.Dispose();
+                if (_client != null)
+                    _client.Dispose();
             }
             base.Dispose(disposing);
         }

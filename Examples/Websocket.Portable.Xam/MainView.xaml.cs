@@ -58,8 +58,6 @@ namespace Websocket.Portable.Xam
 		{
 			BindingContext = this;
 			InitializeComponent ();
-
-
 			Init ();
 		}
 
@@ -71,6 +69,7 @@ namespace Websocket.Portable.Xam
 			await Client.OpenAsync("ws://echo.websocket.org");
 
 			OnMessage("Client connected.");
+
 		}
 
 		private void OnMessage(IWebSocketMessage obj)
