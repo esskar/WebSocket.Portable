@@ -1,6 +1,17 @@
 ﻿<Properties StartupItem="Droid\Websocket.Portable.Xam.Droid.csproj">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Android.Nexus 10 (KitKat)" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="MainView.xaml.cs">
+    <Files>
+      <File FileName="SocketTest.xaml.cs" Line="16" Column="38" />
+      <File FileName="..\..\WebSocket.Portable.Core\_Implementation\TcpConnection.cs" Line="1" Column="1" />
+      <File FileName="d:\Users\Nicholas\Projects\Github\Websockets.Portable\WebSocket.Portable.Core\Internal\DataLayerExtensions.cs" Line="1" Column="1" />
+      <File FileName="..\..\WebSocket.Portable.Core\_Abstract\WebSocketBase.cs" Line="1" Column="1" />
+      <File FileName="..\..\WebSocket.Portable.Core\_Abstract\WebSocketClientBase.cs" Line="1" Column="1" />
+      <File FileName="App.cs" Line="14" Column="27" />
+      <File FileName="MainView.xaml" Line="1" Column="1" />
+      <File FileName="MainView.xaml.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

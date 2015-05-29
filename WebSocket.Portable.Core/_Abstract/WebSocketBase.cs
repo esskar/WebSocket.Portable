@@ -26,7 +26,7 @@ namespace WebSocket.Portable
         protected WebSocketBase()
         {
             _extensions = new List<IWebSocketExtension>();
-            _state = WebSocketState.Closed;            
+            _state = WebSocketState.Closed;
         }
 
         public void RegisterExtension(IWebSocketExtension extension)
@@ -78,9 +78,9 @@ namespace WebSocket.Portable
                 throw new ArgumentNullException("uri");
 
             _uri = WebSocketHelper.CreateWebSocketUri(uri);
-            
+
             var useSsl = _uri.Scheme == "wss";
-            _tcp = await this.ConnectAsync(_uri.DnsSafeHost, _uri.Port, useSsl, cancellationToken);            
+            _tcp = await this.ConnectAsync(_uri.DnsSafeHost, _uri.Port, useSsl, cancellationToken);
             Interlocked.Exchange(ref _state, WebSocketState.Connected);
         }
 
@@ -155,8 +155,8 @@ namespace WebSocket.Portable
             {
                 var versions = response.SecWebSocketVersion;
                 if (versions != null && !versions.Intersect(Consts.SupportedClientVersions).Any())
-                    throw new WebSocketException(WebSocketErrorCode.HandshakeVersionNotSupported);                    
-                    
+                    throw new WebSocketException(WebSocketErrorCode.HandshakeVersionNotSupported);
+
                 throw new WebSocketException(WebSocketErrorCode.HandshakeInvalidStatusCode);
             }
 
@@ -165,11 +165,12 @@ namespace WebSocket.Portable
             var calculatedAccept = Convert.ToBase64String(hash);
 
             if (response.SecWebSocketAccept != calculatedAccept)
-                throw new WebSocketException(WebSocketErrorCode.HandshakeInvalidSecWebSocketAccept);       
+                throw new WebSocketException(WebSocketErrorCode.HandshakeInvalidSecWebSocketAccept);
 
             response.RequestMessage = handshake;
 
             Interlocked.Exchange(ref _state, WebSocketState.Open);
+
 
             return response;
         }
@@ -189,11 +190,12 @@ namespace WebSocket.Portable
 
         public Task<IWebSocketFrame> ReceiveFrameAsync()
         {
-            return this.ReceiveFrameAsync(CancellationToken.None);
+            return ReceiveFrameAsync(CancellationToken.None);
         }
 
         public async Task<IWebSocketFrame> ReceiveFrameAsync(CancellationToken cancellationToken)
         {
+            //BADREAD?
             var frame = new WebSocketServerFrame();
             await frame.ReadFromAsync(_tcp, cancellationToken);
             return frame;
@@ -209,7 +211,7 @@ namespace WebSocket.Portable
         private Task SendAsync(string data, Encoding encoding, CancellationToken cancellationToken)
         {
             var bytes = encoding.GetBytes(data);
-            return this.SendAsync(bytes, 0, bytes.Length, cancellationToken);
+            return SendAsync(bytes, 0, bytes.Length, cancellationToken);
         }
 
         /// <summary>

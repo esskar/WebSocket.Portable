@@ -82,13 +82,13 @@ namespace WebSocket.Portable
             if (_webSocket != null)
                 throw new InvalidOperationException("Client has been opened before.");
 
-            _webSocket = new TWebSocket();
+			_webSocket = new TWebSocket();
 			await _webSocket.ConnectAsync(uri, cancellationToken);
-            await _webSocket.SendHandshakeAsync(cancellationToken);
-            this.ReceiveLoop();
+			await _webSocket.SendHandshakeAsync(cancellationToken);
+			this.ReceiveLoop();
             this.OnOpened();
         }
-
+        
         public Task CloseAsync()
         {
             return CloseInternal();
@@ -104,7 +104,6 @@ namespace WebSocket.Portable
             if (_cts != null)
             {
                 _cts.Cancel();
-                _cts = null;
             }
 
             if (_webSocket != null)
@@ -129,23 +128,23 @@ namespace WebSocket.Portable
                 throw new ArgumentNullException("text");
 
             var bytes = Encoding.UTF8.GetBytes(text);
-            return this.SendAsync(false, bytes, 0, bytes.Length, cancellationToken);
+            return SendAsync(false, bytes, 0, bytes.Length, cancellationToken);
         }
 
         public Task SendAsync(byte[] bytes, int offset, int length)
         {
-            return this.SendAsync(bytes, offset, length, CancellationToken.None);
+            return SendAsync(bytes, offset, length, CancellationToken.None);
         }
 
         public Task SendAsync(byte[] bytes, int offset, int length, CancellationToken cancellationToken)
         {
-            return this.SendAsync(true, bytes, offset, length, cancellationToken);
+            return SendAsync(true, bytes, offset, length, cancellationToken);
         }
 
         private Task SendAsync(bool isBinary, byte[] bytes, int offset, int length, CancellationToken cancellationToken)
         {
             var task = TaskAsyncHelper.Empty;
-            var max = this.MaxFrameDataLength;
+            var max = MaxFrameDataLength;
             var opcode = isBinary ? WebSocketOpcode.Binary : WebSocketOpcode.Text;
             while (length > 0)
             {
@@ -161,7 +160,7 @@ namespace WebSocket.Portable
                 offset += size;
                 opcode = WebSocketOpcode.Continuation;
 
-                task = task.Then(f => this.SendAsync(f, cancellationToken), frame);                
+                task = task.Then(f => SendAsync(f, cancellationToken), frame);                
             }
             return task;            
         }
@@ -173,14 +172,14 @@ namespace WebSocket.Portable
 
         protected virtual void OnError(Exception exception)
         {
-            var handler = this.Error;
+            var handler = Error;
             if (handler != null)
                 handler(exception);
         }
 
         protected virtual void OnOpened()
         {
-            var handler = this.Opened;
+            var handler = Opened;
             if (handler != null)
                 handler();
         }
@@ -213,6 +212,7 @@ namespace WebSocket.Portable
             {
                 try
                 {
+                    //BADREAD : Starting point.
                     var frame = await _webSocket.ReceiveFrameAsync(_cts.Token);
                     if (frame == null)
                     {
@@ -220,7 +220,7 @@ namespace WebSocket.Portable
                         break;
                     }
 
-                    this.OnFrameReceived(frame);
+                    OnFrameReceived(frame);
 
                     if (frame.Opcode == WebSocketOpcode.Close)
                     {
@@ -240,7 +240,7 @@ namespace WebSocket.Portable
                                 Opcode = WebSocketOpcode.Pong,
                                 Payload = frame.Payload
                             };
-                            await this.SendAsync(pongFrame, _cts.Token);
+                            await SendAsync(pongFrame, _cts.Token);
                         }
                     }                    
                     else if (frame.IsDataFrame)
@@ -257,13 +257,14 @@ namespace WebSocket.Portable
                         currentMessage.AddFrame(frame);                        
                     }
                     else
-                    {                       
+                    {               
+						System.Diagnostics.Debug.WriteLine(String.Format("Other frame received: {0}", frame.Opcode));
                         this.LogDebug("Other frame received: {0}", frame.Opcode);
                     }
 
                     if (currentMessage != null && currentMessage.IsComplete)
                     {
-                        this.OnMessageReceived(currentMessage);
+                        OnMessageReceived(currentMessage);
                         currentMessage = null;
                     }
                 }
