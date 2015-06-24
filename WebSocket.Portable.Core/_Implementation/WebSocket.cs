@@ -10,7 +10,7 @@ namespace WebSocket.Portable
         protected override async Task<ITcpConnection> ConnectAsync(string host, int port, bool useSsl, CancellationToken cancellationToken)
         {
             InnerConnection = new TcpConnection(useSsl);
-            await InnerConnection.ConnectAsync(host, cancellationToken);
+            await InnerConnection.ConnectAsync(host, port, cancellationToken);
             return InnerConnection;
         }
 

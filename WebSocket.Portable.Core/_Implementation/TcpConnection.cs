@@ -35,17 +35,17 @@ namespace WebSocket.Portable
         }
 
 
-        public async Task ConnectAsync(string host, CancellationToken cancellationToken)
+        public async Task ConnectAsync(string address, int port, CancellationToken cancellationToken)
         {
-            var port = host.Contains("wss") ? 443 : 80;
             try
             {
-                await _client.ConnectAsync(host, port, IsSecure);
+                await _client.ConnectAsync(address, port, IsSecure);
             }
             catch (Exception se)
             {
-                throw new WebException(string.Format("Failed to connect to '{0}:{1}'", host, port), se);
+                throw new WebException(string.Format("Failed to connect to '{0}:{1}'", address, port), se);
             }
+
         }
 
         /// <summary>
