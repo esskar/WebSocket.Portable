@@ -29,11 +29,17 @@ namespace WebSocket.Universal
         {
             this.InitializeComponent();
 
+            Tests();
+        }
+
+
+        private async Task Tests()
+        {
             // socket Test
-            TestRda();
+            await TestRda();
 
             // Websocket Test
-            TestWebsocketPortable();
+            await TestWebsocketPortable();
         }
 
 
@@ -42,7 +48,9 @@ namespace WebSocket.Universal
             var socket = new Sockets.Plugin.TcpSocketClient();
 
             //Never Ending
-            await socket.ConnectAsync("ws://echo.websocket.org", 80, false);
+            await socket.ConnectAsync("echo.websocket.org", 80, false);
+
+            var b = socket.ReadStream.ReadByte();
 
             Debug.WriteLine("TestRda");
         }
