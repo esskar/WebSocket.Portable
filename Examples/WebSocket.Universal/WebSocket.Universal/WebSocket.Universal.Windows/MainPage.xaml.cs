@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -47,9 +48,16 @@ namespace WebSocket.Universal
         {
             var socket = new Sockets.Plugin.TcpSocketClient();
 
-            //Never Ending
             await socket.ConnectAsync("echo.websocket.org", 80, false);
 
+            // Send HS
+            var handshake = "GET / HTTP/1.1\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Key: p2z/MFplfpRzjsVywqRQTg==\r\nHost: echo.websocket.org\r\nOrigin: http://echo.websocket.org/\r\n\r\n";
+            var bytes = UTF8Encoding.UTF8.GetBytes(handshake);
+
+            await socket.WriteStream.FlushAsync();
+            await socket.WriteStream.WriteAsync(bytes, 0, bytes.Length);
+
+            // Read HS, Never Ending
             var b = socket.ReadStream.ReadByte();
 
             Debug.WriteLine("TestRda");

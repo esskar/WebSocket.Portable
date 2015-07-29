@@ -76,7 +76,9 @@ namespace WebSocket.Portable
         public override Task<string> ReadLineAsync(CancellationToken cancellationToken)
         {
             return Task.Run(() =>
-             {
+            {
+                _client.WriteStream.Flush();
+
                  var sb = new StringBuilder();
                  var b = 0;
                  do

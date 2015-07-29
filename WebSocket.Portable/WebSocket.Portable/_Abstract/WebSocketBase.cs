@@ -80,7 +80,8 @@ namespace WebSocket.Portable
             _uri = WebSocketHelper.CreateWebSocketUri(uri);
 
             var useSsl = _uri.Scheme == "wss";
-            _tcp = await this.ConnectAsync(_uri.DnsSafeHost, _uri.Port, useSsl, cancellationToken);
+            var port = useSsl ? 443 : 80;
+            _tcp = await this.ConnectAsync(_uri.DnsSafeHost, port, useSsl, cancellationToken);
             Interlocked.Exchange(ref _state, WebSocketState.Connected);
         }
 
