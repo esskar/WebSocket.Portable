@@ -111,7 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\WebSocket.Portable\WebSocket.Portable\WebSocket.Portable.csproj">
-      <Project>{4026F013-E5A0-437F-8B1A-DC04F85EAEE4}</Project>
+      <Project>{4026f013-e5a0-437f-8b1a-dc04f85eaee4}</Project>
       <Name>WebSocket.Portable</Name>
     </ProjectReference>
     <ProjectReference Include="..\Websockets.XamExample\Websockets.XamExample.csproj">

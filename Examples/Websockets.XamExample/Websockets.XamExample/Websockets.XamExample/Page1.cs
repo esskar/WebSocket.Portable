@@ -51,7 +51,7 @@ namespace Websockets.XamExample
             // Send HS
             var handshake =
                 "GET / HTTP/1.1\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Key: p2z/MFplfpRzjsVywqRQTg==\r\nHost: echo.websocket.org\r\nOrigin: http://echo.websocket.org/\r\n\r\n";
-            var bytes = UTF8Encoding.UTF8.GetBytes(handshake);
+            var bytes = Encoding.UTF8.GetBytes(handshake);
 
             await socket.WriteStream.FlushAsync();
             await socket.WriteStream.WriteAsync(bytes, 0, bytes.Length);
