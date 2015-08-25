@@ -15,6 +15,7 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
+packages/
 
 # Roslyn cache directories
 *.ide/
@@ -187,3 +188,23 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+
+# Code Compare
+[difftool "codecompare"]
+cmd = 'D:\\Program Files\\Devart\\Code Compare\\codecompare.exe' -W \"$LOCAL\" \"$REMOTE\" 
+renames = true
+ 
+[diff]
+tool = codecompare
+guitool = codecompare
+ 
+[mergetool "codecompare"]
+cmd = 'D:\\Program Files\\Devart\\Code Compare\\codemerge.exe' -MF=\"$LOCAL\" -TF=\"$REMOTE\" -BF=\"$BASE\" -RF=\"$MERGED\" 
+trustExitCode = true
+ 
+[mergetool]
+keepBackup = false
+ 
+[merge]
+tool = codecompare
+guitool = codecompare

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -70,6 +71,7 @@ namespace WebSocket.Portable
         /// <exception cref="System.InvalidOperationException">Cannot connect because current state is  + _state</exception>
         public async Task ConnectAsync(string uri, CancellationToken cancellationToken)
         {
+            Debug.WriteLine("Websockets.Portable:WebsocketBase ConnectAsync");
             var oldState = Interlocked.CompareExchange(ref _state, WebSocketState.Connecting, WebSocketState.Closed);
             if (oldState != WebSocketState.Closed)
                 throw new InvalidOperationException(ErrorMessages.InvalidState + _state);
@@ -196,7 +198,6 @@ namespace WebSocket.Portable
 
         public async Task<IWebSocketFrame> ReceiveFrameAsync(CancellationToken cancellationToken)
         {
-            //BADREAD?
             var frame = new WebSocketServerFrame();
             await frame.ReadFromAsync(_tcp, cancellationToken);
             return frame;

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using WebSocket.Portable;
@@ -17,7 +14,7 @@ namespace Websockets.XamExample
 
         public Page1()
         {
-            mlbl = new Label {Text = "Hello ContentPage"};
+            mlbl = new Label { Text = "Hello ContentPage" };
 
             Content = new StackLayout
             {
@@ -30,7 +27,7 @@ namespace Websockets.XamExample
 
             Tests();
         }
-        
+
 
         private async Task Tests()
         {
@@ -69,6 +66,7 @@ namespace Websockets.XamExample
             client.Opened += websocket_Opened;
             client.Closed += websocket_Closed;
             client.MessageReceived += websocket_MessageReceived;
+            client.Error += Client_Error;
 
             //Never Ending
             await client.OpenAsync("ws://echo.websocket.org");
@@ -77,7 +75,17 @@ namespace Websockets.XamExample
 
             await client.SendAsync("Hello World2");
 
+            await client.CloseAsync();
+
+            await Task.Delay(100);
+
             Debug.WriteLine("TestWebsocketPortable");
+        }
+
+        private void Client_Error(Exception obj)
+        {
+
+            Debug.WriteLine("Error "+obj.Message);
         }
 
         private void websocket_MessageReceived(IWebSocketMessage obj)

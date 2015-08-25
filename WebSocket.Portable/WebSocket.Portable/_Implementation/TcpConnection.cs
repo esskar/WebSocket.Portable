@@ -33,8 +33,7 @@ namespace WebSocket.Portable
         {
             get { return _isSecure; }
         }
-
-
+        
         public Task ConnectAsync(string address, CancellationToken cancellationToken)
         {
             var port = address.Contains("wss") ? 443 : 80;
@@ -66,8 +65,7 @@ namespace WebSocket.Portable
         {
             return _client.ReadStream.ReadAsync(buffer, offset, length, cancellationToken);
         }
-
-
+        
         /// <summary>
         /// Receives a line asynchronous.
         /// </summary>
@@ -79,28 +77,28 @@ namespace WebSocket.Portable
             {
                 _client.WriteStream.Flush();
 
-                 var sb = new StringBuilder();
-                 var b = 0;
-                 do
-                 {
-                     b = _client.ReadStream.ReadByte();
-                     var ch = Convert.ToChar(b);
+                var sb = new StringBuilder();
+                var b = 0;
+                do
+                {
+                    b = _client.ReadStream.ReadByte();
+                    var ch = Convert.ToChar(b);
 
-                     switch (ch)
-                     {
-                         case '\r':
-                             break;
-                         case '\n':
-                             return sb.ToString();
-                         default:
-                             sb.Append(ch);
-                             break;
-                     }
+                    switch (ch)
+                    {
+                        case '\r':
+                            break;
+                        case '\n':
+                            return sb.ToString();
+                        default:
+                            sb.Append(ch);
+                            break;
+                    }
 
-                 } while (b != 0);
+                } while (b != 0);
 
-                 return sb.ToString();
-             }, cancellationToken);
+                return sb.ToString();
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -124,10 +122,10 @@ namespace WebSocket.Portable
         {
             if (disposing)
             {
-                //  if (Reader != null)
-                //       Reader.Dispose();
                 if (_client != null)
+                {
                     _client.Dispose();
+                }
             }
             base.Dispose(disposing);
         }

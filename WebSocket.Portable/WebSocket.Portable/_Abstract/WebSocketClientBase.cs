@@ -212,11 +212,10 @@ namespace WebSocket.Portable
             {
                 try
                 {
-                    //BADREAD : Starting point.
                     var frame = await _webSocket.ReceiveFrameAsync(_cts.Token);
                     if (frame == null)
                     {
-                        // todo
+                        throw new Exception("null frame");
                         break;
                     }
 

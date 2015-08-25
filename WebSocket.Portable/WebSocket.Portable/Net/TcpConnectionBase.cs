@@ -7,13 +7,6 @@ namespace WebSocket.Portable.Net
 {
     public abstract class TcpConnectionBase : ITcpConnection
     {
-        /// <summary>
-        /// Finalizes an instance of the <see cref="TcpConnectionBase"/> class.
-        /// </summary>
-        ~TcpConnectionBase()
-        {
-            this.Dispose(false);
-        }
 
         /// <summary>
         /// Gets a value indicating whether this tcp connection is secure.
@@ -54,7 +47,7 @@ namespace WebSocket.Portable.Net
         /// <returns></returns>
         public Task<int> ReadAsync(byte[] buffer, int offset, int length)
         {
-            return this.ReadAsync(buffer, offset, length, CancellationToken.None);
+            return ReadAsync(buffer, offset, length, CancellationToken.None);
         }
 
         /// <summary>
