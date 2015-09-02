@@ -121,7 +121,6 @@ namespace WebSocket.Portable
         public async Task ReadFromAsync(IDataLayer layer, CancellationToken cancellationToken)
         {
             var headerBytes = await layer.ReadAsync(2, cancellationToken);
-
             this.IsFin = (headerBytes[0] & 0x80) == 0x80;
             this.IsRsv1 = (headerBytes[0] & 0x40) == 0x40;
             this.IsRsv2 = (headerBytes[0] & 0x20) == 0x20;

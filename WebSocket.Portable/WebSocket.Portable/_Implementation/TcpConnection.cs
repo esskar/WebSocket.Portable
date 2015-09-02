@@ -33,10 +33,10 @@ namespace WebSocket.Portable
         {
             get { return _isSecure; }
         }
-        
+
         public Task ConnectAsync(string address, CancellationToken cancellationToken)
         {
-            var port = address.Contains("wss") ? 443 : 80;
+            var port = address.StartsWith("wss://") ? 443 : 80;
             return ConnectAsync(address, port, cancellationToken);
         }
 
@@ -65,7 +65,7 @@ namespace WebSocket.Portable
         {
             return _client.ReadStream.ReadAsync(buffer, offset, length, cancellationToken);
         }
-        
+
         /// <summary>
         /// Receives a line asynchronous.
         /// </summary>
@@ -118,13 +118,14 @@ namespace WebSocket.Portable
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        protected override void Dispose(bool disposing)
+        protected override async void Dispose(bool disposing)
         {
             if (disposing)
             {
                 if (_client != null)
                 {
-                    _client.Dispose();
+                    //_client.Dispose();
+                    await _client.DisconnectAsync();
                 }
             }
             base.Dispose(disposing);

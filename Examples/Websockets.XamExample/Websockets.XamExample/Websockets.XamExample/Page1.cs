@@ -36,6 +36,8 @@ namespace Websockets.XamExample
 
             // Websocket Test
             await TestWebsocketPortable();
+
+           // await TestBigString();
         }
 
 
@@ -60,6 +62,7 @@ namespace Websockets.XamExample
             mlbl.Text = "Tested Rda";
         }
 
+
         private async Task TestWebsocketPortable()
         {
             var client = new WebSocketClient();
@@ -74,6 +77,40 @@ namespace Websockets.XamExample
             await client.SendAsync("Hello World");
 
             await client.SendAsync("Hello World2");
+
+            await Task.Delay(1000);
+
+            await client.CloseAsync();
+
+            await Task.Delay(100);
+
+            Debug.WriteLine("TestWebsocketPortable");
+        }
+
+        private async Task TestBigString()
+        {
+            var client = new WebSocketClient();
+            client.Opened += websocket_Opened;
+            client.Closed += websocket_Closed;
+            client.MessageReceived += websocket_MessageReceived;
+            client.Error += Client_Error;
+
+            //Never Ending
+            await client.OpenAsync("ws://echo.websocket.org");
+            
+
+            var sb = new StringBuilder();
+            for (int i = 0;i < 1000;i++)
+            {
+                sb.Append("A");
+            }
+
+            for (int i = 0; i < 5; i++)
+            {
+                await client.SendAsync(sb.ToString());
+
+            }
+            await Task.Delay(1000);
 
             await client.CloseAsync();
 

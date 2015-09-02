@@ -14,7 +14,7 @@ namespace WebSocket.Portable
         protected TWebSocket _webSocket;
         private CancellationTokenSource _cts;
         private int _maxFrameDataLength = Consts.MaxDefaultFrameDataLength;
-        
+
         public event Action Opened;
         public event Action Closed;
         public event Action<Exception> Error;
@@ -25,12 +25,10 @@ namespace WebSocket.Portable
         {
             this.AutoSendPongResponse = true;
         }
-
         ~WebSocketClientBase()
         {
             this.Dispose(false);
         }
-
         public void Dispose()
         {
             this.Dispose(true);
@@ -63,7 +61,7 @@ namespace WebSocket.Portable
             get { return _maxFrameDataLength; }
             set
             {
-                if (_maxFrameDataLength == value) 
+                if (_maxFrameDataLength == value)
                     return;
 
                 if (value <= 0 || value > Consts.MaxAllowedFrameDataLength)
@@ -82,13 +80,13 @@ namespace WebSocket.Portable
             if (_webSocket != null)
                 throw new InvalidOperationException("Client has been opened before.");
 
-			_webSocket = new TWebSocket();
-			await _webSocket.ConnectAsync(uri, cancellationToken);
-			await _webSocket.SendHandshakeAsync(cancellationToken);
-			this.ReceiveLoop();
+            _webSocket = new TWebSocket();
+            await _webSocket.ConnectAsync(uri, cancellationToken);
+            await _webSocket.SendHandshakeAsync(cancellationToken);
+            this.ReceiveLoop();
             this.OnOpened();
         }
-        
+
         public Task CloseAsync()
         {
             return CloseInternal();
@@ -106,10 +104,12 @@ namespace WebSocket.Portable
                 _cts.Cancel();
             }
 
+            await Task.Delay(1000);
+
             if (_webSocket != null)
             {
                 await _webSocket.CloseAsync(WebSocketErrorCode.CloseNormal);
-                
+
                 if (Closed != null)
                 {
                     Closed();
@@ -160,9 +160,9 @@ namespace WebSocket.Portable
                 offset += size;
                 opcode = WebSocketOpcode.Continuation;
 
-                task = task.Then(f => SendAsync(f, cancellationToken), frame);                
+                task = task.Then(f => SendAsync(f, cancellationToken), frame);
             }
-            return task;            
+            return task;
         }
 
         private Task SendAsync(IWebSocketFrame frame, CancellationToken cancellationToken)
@@ -225,7 +225,7 @@ namespace WebSocket.Portable
                     {
                         if (Closed != null)
                         {
-                          await  CloseAsync();
+                            await CloseAsync();
                         }
                         break;
                     }
@@ -241,7 +241,7 @@ namespace WebSocket.Portable
                             };
                             await SendAsync(pongFrame, _cts.Token);
                         }
-                    }                    
+                    }
                     else if (frame.IsDataFrame)
                     {
                         if (currentMessage != null)
@@ -253,11 +253,11 @@ namespace WebSocket.Portable
                     {
                         if (currentMessage == null)
                             throw new WebSocketException(WebSocketErrorCode.CloseInconstistentData);
-                        currentMessage.AddFrame(frame);                        
+                        currentMessage.AddFrame(frame);
                     }
                     else
-                    {               
-						System.Diagnostics.Debug.WriteLine(String.Format("Other frame received: {0}", frame.Opcode));
+                    {
+                        System.Diagnostics.Debug.WriteLine(String.Format("Other frame received: {0}", frame.Opcode));
                         this.LogDebug("Other frame received: {0}", frame.Opcode);
                     }
 
@@ -271,6 +271,13 @@ namespace WebSocket.Portable
                 {
                     this.LogError("An web socket error occurred.", wsex);
                     this.OnError(wsex);
+                    break;
+                }
+                catch (ObjectDisposedException ex)
+                {
+                    //https://github.com/rdavisau/sockets-for-pcl/issues/34
+                    this.LogError("An unexpected error occurred.", ex);
+                    this.OnError(ex);
                     break;
                 }
                 catch (Exception ex)

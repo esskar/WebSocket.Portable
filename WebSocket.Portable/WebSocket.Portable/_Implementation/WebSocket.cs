@@ -13,11 +13,5 @@ namespace WebSocket.Portable
             await InnerConnection.ConnectAsync(host, port, cancellationToken);
             return InnerConnection;
         }
-
-        public override void Dispose()
-        {
-            InnerConnection.Dispose();
-            base.Dispose();
-        }
     }
 }
