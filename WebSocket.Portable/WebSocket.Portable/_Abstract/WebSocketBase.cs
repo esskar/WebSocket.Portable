@@ -56,20 +56,23 @@ namespace WebSocket.Portable
         /// Connects asynchronous.
         /// </summary>
         /// <param name="uri">The URI.</param>
+        /// <param name="port"></param>
         /// <returns></returns>
-        public Task ConnectAsync(string uri)
+        public Task ConnectAsync(string uri,int port, bool useSSL)
         {
-            return this.ConnectAsync(uri, CancellationToken.None);
+            return this.ConnectAsync(uri, port, useSSL, CancellationToken.None);
         }
 
         /// <summary>
         /// Connects asynchronous.
         /// </summary>
         /// <param name="uri">The URI.</param>
+        /// <param name="port"></param>
+        /// <param name="useSSL"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">Cannot connect because current state is  + _state</exception>
-        public async Task ConnectAsync(string uri, CancellationToken cancellationToken)
+        public async Task ConnectAsync(string uri, int port, bool useSSL, CancellationToken cancellationToken)
         {
             Debug.WriteLine("Websockets.Portable:WebsocketBase ConnectAsync");
             var oldState = Interlocked.CompareExchange(ref _state, WebSocketState.Connecting, WebSocketState.Closed);
@@ -80,10 +83,8 @@ namespace WebSocket.Portable
                 throw new ArgumentNullException("uri");
 
             _uri = WebSocketHelper.CreateWebSocketUri(uri);
-
-            var useSsl = _uri.Scheme == "wss";
-            var port = useSsl ? 443 : 80;
-            _tcp = await this.ConnectAsync(_uri.DnsSafeHost, port, useSsl, cancellationToken);
+            
+            _tcp = await this.ConnectAsyncInternal(_uri.DnsSafeHost, port, useSSL, cancellationToken);
             Interlocked.Exchange(ref _state, WebSocketState.Connected);
         }
 
@@ -95,7 +96,7 @@ namespace WebSocket.Portable
         /// <param name="useSsl">if set to <c>true</c> [use SSL].</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        protected abstract Task<ITcpConnection> ConnectAsync(string host, int port, bool useSsl, CancellationToken cancellationToken);
+        protected abstract Task<ITcpConnection> ConnectAsyncInternal(string host, int port, bool useSsl, CancellationToken cancellationToken);
 
         /// <summary>
         /// Sends the default handshake asynchronous.

@@ -72,16 +72,30 @@ namespace WebSocket.Portable
 
         public Task OpenAsync(string uri)
         {
-            return this.OpenAsync(uri, CancellationToken.None);
+            var useSsl = uri.StartsWith("wss");
+            var port = useSsl ? 443 : 80;
+
+            return this.OpenAsync(uri, port);
         }
 
-        public async Task OpenAsync(string uri, CancellationToken cancellationToken)
+        public Task OpenAsync(string uri, int port)
+        {
+            var useSSL = uri.StartsWith("wss");
+            return this.OpenAsync(uri, port, useSSL);
+        }
+
+        public Task OpenAsync(string uri, int port, bool useSSL)
+        {
+            return this.OpenAsync(uri, port, useSSL, CancellationToken.None);
+        }
+
+        public async Task OpenAsync(string uri, int port, bool useSSL, CancellationToken cancellationToken)
         {
             if (_webSocket != null)
                 throw new InvalidOperationException("Client has been opened before.");
 
             _webSocket = new TWebSocket();
-            await _webSocket.ConnectAsync(uri, cancellationToken);
+            await _webSocket.ConnectAsync(uri, port, useSSL, cancellationToken);
             await _webSocket.SendHandshakeAsync(cancellationToken);
             this.ReceiveLoop();
             this.OnOpened();

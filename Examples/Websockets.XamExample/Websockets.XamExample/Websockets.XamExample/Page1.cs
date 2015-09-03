@@ -70,9 +70,9 @@ namespace Websockets.XamExample
             client.Closed += websocket_Closed;
             client.MessageReceived += websocket_MessageReceived;
             client.Error += Client_Error;
-
-            //Never Ending
+            
             await client.OpenAsync("ws://echo.websocket.org");
+            
 
             await client.SendAsync("Hello World");
 

@@ -17,22 +17,24 @@ namespace WebSocket.Portable.Interfaces
         /// </summary>
         /// <returns></returns>
         Task CloseAsync(WebSocketErrorCode errorCode);
-
+        
         /// <summary>
         /// Connects asynchronous.
         /// </summary>
         /// <param name="uri">The URI.</param>
+        /// <param name="port">80, 443, whatever</param>
         /// <returns></returns>
-        Task ConnectAsync(string uri);
+        Task ConnectAsync(string uri, int port, bool useSSL);
 
         /// <summary>
         /// Connects asynchronous.
         /// </summary>
         /// <param name="uri">The URI.</param>
+        /// <param name="port">80, 443, whatever</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">Cannot connect because current state is  + _state</exception>
-        Task ConnectAsync(string uri, CancellationToken cancellationToken);
+        Task ConnectAsync(string uri, int port, bool useSSl, CancellationToken cancellationToken);
 
         /// <summary>
         /// Sends the default handshake asynchronous.
