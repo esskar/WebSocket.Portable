@@ -1,17 +1,26 @@
 ## WebSocket.Portable
 
-WebSocket.Portable is a portable C# implementation of 
-the [WebSocket][1] protocol.
+WebSocket.Portable is a PCL Profile 259 C# implementation of the [WebSocket protocol](https://tools.ietf.org/html/rfc6455). This plugin uses .net 4.5 and is compatible with Windows 8, Windows Phone, Windows Phone Silverlight, Xamarin Android, Xamarin iOS, and Xamarin iOS (Classic). This is a fork from [esskar](https://github.com/esskar/WebSocket.Portable).
 
-### Status
+### NuGet
+https://www.nuget.org/packages/WebSocket.Portable.Core/
 
-The WebSocket.Portable library is still in pre-alpha state, 
-still lots of features are missing, still lots of tests to write, 
-interfaces will probably change.
+### Modifications
 
-### Installation
+- Upgraded PCL assembly targets
+- Added sockets-for-pcl websocket implementation (was using native implementations before).
+- Fixed some bugs
+ 
+### Dependencies
 
-WebSocket.Portable will be available via NuGet.
+- Microsoft Bcl (NuGet)
+  - Microsoft.Bcl
+  - Microsoft.Bcl.Async
+  - Microsoft.Bcl.Build
+  - Microsoft.Net.Http
+- [Sockets For PCL](https://github.com/rdavisau/sockets-for-pcl) (NuGet)
+
+> **Important** : These must be installed on all platforms. So if you have a XamarinApp.Common and a XamarinApp.Droid, both projects needs the above dependencies. 
 
 ### Usage
 
@@ -26,10 +35,25 @@ WebSocket.Portable will be available via NuGet.
 	// send some data
     await client.SendAsync("WebSocket.Portable rocks!");
 
+### Example
+
+There is a XamarinApp.Droid example located in the /Examples/ folder.
+
+### TODO
+
+- Remove abstraction which is no longer needed.
+
+
+### Thanks
+
+- rdavisau : For sockets-for-pcl which makes this possible.
+
+- esskar : For starting the websocket abstraction.
+
+- Xamarin : For awesome cross platform development tools
+
+- Marcin Kulwikowski : For awesome bug finding.
+
 ### Questions
 
-Ask questions in the [WebSocket.Portable][2] room on [JabbR][3].
-
-[1]: http://www.rfc-editor.org/rfc/rfc6455.txt
-[2]: https://jabbr.net/#/rooms/WebSocketPortable
-[3]: https://jabbr.net/
+Post onto the Github [issue system](https://github.com/NVentimiglia/WebSocket.Portable) or contact me via my [blog](http://nicholasventimiglia.com)
